@@ -1,3 +1,13 @@
+<script setup>
+    import Home from './pages/Home.vue';
+</script>
+
+
 <template>
-    <div></div>
+    <Home></Home>
 </template>
+
+
+<style>
+
+</style>

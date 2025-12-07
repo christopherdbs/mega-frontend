@@ -4,8 +4,7 @@
     <nav>
         <div class="navbar">
             <div class="navbar-left">
-                <span class="icon">Logo</span>
-                <span class="brand"><strong>MEGA</strong></span>
+                <span class="icon">Logo<strong> MEGA</strong></span>
             </div>
 
             <ul class="navbar-links">
@@ -14,8 +13,12 @@
             </ul>
 
             <div class="navbar-right">
-                <button class="cart">🛒</button>
-                <button class="user">👤</button>
+                <button class="cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                </button>
+                <button class="user">
+                    <i class="fa-solid fa-circle-user"></i>
+                </button>
             </div>
         </div>
     </nav>
@@ -62,9 +65,15 @@ nav {
 }
 
 .navbar-right button {
+    color: white;
     background: transparent;
     border: none;
     font-size: 20px;
     cursor: pointer;
 }
+
+.navbar-right button:hover {
+    color: #DA1061;
+}
+
 </style>

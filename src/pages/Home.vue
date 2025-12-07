@@ -1,15 +1,11 @@
 <script setup>
-    import Navbar from '../components/Navbar.vue';
-    import Highlights from '../components/Highlights.vue';
+import Navbar from "../components/Navbar.vue";
+import Highlights from "../components/Highlights.vue";
 </script>
 
-
 <template>
-    <Navbar /> 
+    <Navbar />
     <Highlights />
 </template>
 
-
-<style>
-
-</style>
+<style></style>

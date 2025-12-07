@@ -1,7 +1,4 @@
-<script setup>
-
-</script>
-
+<script setup></script>
 
 <template>
     <nav>
@@ -23,7 +20,6 @@
         </div>
     </nav>
 </template>
-
 
 <style>
 nav {
@@ -57,7 +53,7 @@ nav {
 }
 
 .navbar-links a:hover {
-    color: #DA1061;
+    color: #da1061;
 }
 
 .navbar-right {
@@ -71,5 +67,4 @@ nav {
     font-size: 20px;
     cursor: pointer;
 }
-
 </style>

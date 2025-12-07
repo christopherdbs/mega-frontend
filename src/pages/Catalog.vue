@@ -14,10 +14,8 @@ const itemsPerPage = 10;
 const totalPages = ref(1);
 const filter = ref("popularity");
 
-const pc_platforms_ids = [6, 3, 14, 92];
-
 const getFamilyStr = () => {
-    const platform_ids = [...platforms.map((objet) => objet.id), ...pc_platforms_ids];
+    const platform_ids = platforms.map((objet) => objet.id);
     let str = "(";
     for (let i = 0; i < platform_ids.length; i++) {
         str += i != platform_ids.length - 1 ? platform_ids[i] + ", " : platform_ids[i];

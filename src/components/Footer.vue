@@ -1,14 +1,10 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
     <footer class="footer">
         <div class="footer-left">
             <span class="brand">Logo<strong> MEGA</strong></span>
-            <p class="footer-description">
-                Description
-            </p>
+            <p class="footer-description">Description</p>
         </div>
 
         <div class="footer-right">
@@ -26,7 +22,7 @@
         </div>
     </footer>
 </template>
-    
+
 <style>
 .footer {
     background-color: #13121d;
@@ -58,7 +54,7 @@
     background-color: #ffffff26;
 }
 
-@media (max-width : 600px) {
+@media (max-width: 600px) {
     .footer {
         flex-direction: column;
         gap: 10px;

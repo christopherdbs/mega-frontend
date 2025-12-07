@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
 
 <template>
     <nav>
@@ -8,8 +10,8 @@
             </div>
 
             <ul class="navbar-links">
-                <li><a href="#" class="navbar-item">Home</a></li>
-                <li><a href="#" class="navbar-item">Catalog</a></li>
+                <li><RouterLink to="/" class="navbar-item">Home</RouterLink></li>
+                <li><RouterLink to="/catalog" class="navbar-item">Catalog</RouterLink></li>
             </ul>
 
             <div class="navbar-right">
@@ -17,6 +19,7 @@
                     <i class="fa-solid fa-basket-shopping"></i>
                 </button>
                 <button class="user">
+                    s
                     <i class="fa-solid fa-circle-user"></i>
                 </button>
             </div>
@@ -73,7 +76,6 @@ nav {
 }
 
 .navbar-right button:hover {
-    color: #DA1061;
+    color: #da1061;
 }
-
 </style>

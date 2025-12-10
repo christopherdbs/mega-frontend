@@ -106,11 +106,17 @@ const handleMouseLeave = () => {
     pauseVideo();
     isHovering.value = null;
 };
+
+import { useRouter } from "vue-router";
+const router = useRouter();
+const goToDetail = () => {
+    router.push(`/game/${props.data.id}`);
+};
 </script>
 
 <template>
     <div class="relative">
-        <div class="card" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+        <div class="card" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click="goToDetail">
             <div class="card-img">
                 <iframe
                     :id="`player-${props.data.id}`"
@@ -181,6 +187,7 @@ const handleMouseLeave = () => {
     width: 540px;
     height: 304px;
     transition: width 0.2s ease-in-out;
+    cursor: pointer;
 }
 .card-img {
     height: 100%;

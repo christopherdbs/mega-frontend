@@ -6,6 +6,7 @@ import Catalog from "../pages/Catalog.vue";
 const routes = [
     { path: "/", component: Home },
     { path: "/catalog", component: Catalog },
+    { path: "/game/:id", component: () => import("../pages/GameDetail.vue") },
 ];
 
 export const router = createRouter({

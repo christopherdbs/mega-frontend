@@ -3,6 +3,9 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import GameCard from "../components/GameCard.vue";
+import "../styles/GameDetail.css";
+import sampleGameData from "../data/sampleGameDetail.json";
+import samplePopularGames from "../data/samplePopularGames.json";
 
 const route = useRoute();
 const game = ref(null);
@@ -34,8 +37,15 @@ const CLIENT_ID = import.meta.env.VITE_IGDB_CLIENT_ID;
 const ACCESS_TOKEN = import.meta.env.VITE_IGDB_ACCESS_TOKEN;
 
 const fetchGameDetails = async (id) => {
+    // If no API credentials, use sample data
+    if (!CLIENT_ID || !ACCESS_TOKEN) {
+        console.log("Using sample data (no API credentials found)");
+        game.value = sampleGameData;
+        return;
+    }
+
     const requestBody = `fields *, cover.url, cover.width, cover.height, screenshots.url, screenshots.width, screenshots.height, videos.video_id, platforms.name, platforms.platform_family.name, genres.name, involved_companies.company.name; where id = ${id};`;
-    
+
     try {
         const response = await axios({
             method: "POST",
@@ -49,10 +59,18 @@ const fetchGameDetails = async (id) => {
         game.value = response.data[0];
     } catch (err) {
         console.error("Error fetching game details:", err);
+        console.log("Falling back to sample data");
+        game.value = sampleGameData;
     }
 };
 
 const fetchPopularGames = async () => {
+    // If no API credentials, use sample data
+    if (!CLIENT_ID || !ACCESS_TOKEN) {
+        popularGames.value = samplePopularGames;
+        return;
+    }
+
     const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id; sort popularity desc; limit 5; where videos != null;`;
     try {
         const response = await axios({
@@ -67,11 +85,18 @@ const fetchPopularGames = async () => {
         popularGames.value = response.data;
     } catch (err) {
         console.error("Error fetching popular games:", err);
+        popularGames.value = samplePopularGames;
     }
 };
 
 const fetchTrendingGames = async () => {
-     const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id; sort hypes desc; limit 5; where videos != null;`;
+    // If no API credentials, use sample data (reuse popular games for trending)
+    if (!CLIENT_ID || !ACCESS_TOKEN) {
+        trendingGames.value = samplePopularGames.slice().reverse();
+        return;
+    }
+
+    const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id; sort hypes desc; limit 5; where videos != null;`;
     try {
         const response = await axios({
             method: "POST",
@@ -85,6 +110,7 @@ const fetchTrendingGames = async () => {
         trendingGames.value = response.data;
     } catch (err) {
         console.error("Error fetching trending games:", err);
+        trendingGames.value = samplePopularGames.slice().reverse();
     }
 };
 
@@ -230,228 +256,3 @@ watch(() => route.params.id, (newId) => {
         Loading...
     </div>
 </template>
-
-<style scoped>
-.game-detail-page {
-    color: white;
-    background-color: #1c1b29;
-}
-
-.hero {
-    display: flex;
-    justify-content: space-between;
-    padding: 100px 5% 50px 5%;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    min-height: 80vh;
-}
-
-.hero-content {
-    max-width: 50%;
-    z-index: 1;
-}
-
-.breadcrumb {
-    color: #aaa;
-    margin-bottom: 20px;
-    font-size: 0.9em;
-}
-
-.game-title {
-    font-size: 4rem;
-    font-weight: 800;
-    margin-bottom: 20px;
-    line-height: 1.1;
-}
-
-.game-summary {
-    color: #ccc;
-    line-height: 1.6;
-    margin-bottom: 30px;
-    max-width: 600px;
-}
-
-.game-meta {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    margin-bottom: 30px;
-}
-
-.rating-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.rating-circle {
-    width: 50px;
-    height: 50px;
-}
-
-.circular-chart {
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
-  max-height: 250px;
-}
-
-.circle-bg {
-  fill: none;
-  stroke: #444;
-  stroke-width: 3.8;
-}
-
-.circle {
-  fill: none;
-  stroke-width: 2.8;
-  stroke-linecap: round;
-  stroke: #ffbd17; 
-}
-
-.percentage {
-  fill: #fff;
-  font-family: sans-serif;
-  font-weight: bold;
-  font-size: 0.8em;
-  text-anchor: middle;
-}
-
-.meta-info {
-    display: flex;
-    gap: 20px;
-    font-size: 0.9em;
-}
-
-.meta-item {
-    display: flex;
-    flex-direction: column;
-}
-
-.meta-item strong {
-    color: #888;
-    margin-bottom: 5px;
-}
-
-.platform-tags {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.platform-tag {
-    border: 1px solid #555;
-    padding: 5px 15px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    color: #ddd;
-    text-transform: uppercase;
-}
-
-.actions {
-    display: flex;
-    gap: 20px;
-}
-
-.btn {
-    padding: 12px 30px;
-    border-radius: 25px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    text-transform: uppercase;
-    font-size: 0.9em;
-    transition: transform 0.2s;
-}
-
-.btn:hover {
-    transform: scale(1.05);
-}
-
-.btn-primary {
-    background: #ff0055;
-    color: white;
-    background: linear-gradient(90deg, #ff0055 0%, #ff0077 100%);
-}
-
-.btn-secondary {
-    background: transparent;
-    border: 1px solid #555;
-    color: white;
-}
-
-.sidebar-right {
-    width: 300px;
-    background: rgba(0,0,0,0.3);
-    padding: 20px;
-    border-radius: 15px;
-    height: fit-content;
-}
-
-.sidebar-right h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.1em;
-}
-
-.highlight {
-    color: #ff0055;
-}
-
-.sidebar-games {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 columns like design? Actually design looks like row of small posters */
-    gap: 10px;
-}
-.sidebar-game-card img {
-    width: 100%;
-    border-radius: 8px;
-    aspect-ratio: 3/4;
-    object-fit: cover;
-}
-
-
-.main-content {
-    padding: 50px 5%;
-}
-
-.section {
-    margin-bottom: 60px;
-}
-
-.categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.category-card {
-    height: 120px;
-    background-size: cover;
-    background-position: center;
-    border-radius: 12px;
-    display: flex;
-    align-items: flex-end;
-    padding: 15px;
-    font-weight: bold;
-    transition: transform 0.2s;
-    cursor: pointer;
-}
-.category-card:hover {
-    transform: translateY(-5px);
-}
-
-.trending-list {
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    padding-bottom: 20px;
-}
-
-.mixed-grid {
-    display: grid;
-    grid-template-columns: 2fr 2fr 1fr;
-    gap: 30px;
-}
-</style>

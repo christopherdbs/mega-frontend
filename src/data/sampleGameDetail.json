@@ -1,0 +1,111 @@
+{
+  "id": 1942,
+  "name": "The Witcher 3: Wild Hunt",
+  "summary": "The Witcher 3: Wild Hunt concludes the story of the witcher Geralt of Rivia, the series' protagonist, whose story to date has been covered in the previous versions. Geralt's new mission comes in dark times as the mysterious and otherworldly army known as the Wild Hunt invades the Northern Kingdoms, leaving only blood soaked earth and fiery ruin in its wake; and it seems it is the young heiress to the throne of Cintra who they are after.",
+  "rating": 92.5,
+  "first_release_date": 1432080000,
+  "cover": {
+    "id": 82395,
+    "url": "//images.igdb.com/igdb/image/upload/t_thumb/co1wyy.jpg",
+    "width": 1000,
+    "height": 1426
+  },
+  "screenshots": [
+    {
+      "id": 123456,
+      "url": "//images.igdb.com/igdb/image/upload/t_thumb/sc7eoi.jpg",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": 123457,
+      "url": "//images.igdb.com/igdb/image/upload/t_thumb/sc7eoj.jpg",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": 123458,
+      "url": "//images.igdb.com/igdb/image/upload/t_thumb/sc7eok.jpg",
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "videos": [
+    {
+      "id": 98765,
+      "video_id": "c0i88t0Kacs"
+    }
+  ],
+  "platforms": [
+    {
+      "id": 6,
+      "name": "PC (Microsoft Windows)",
+      "platform_family": {
+        "id": 1,
+        "name": "PC"
+      }
+    },
+    {
+      "id": 48,
+      "name": "PlayStation 4",
+      "platform_family": {
+        "id": 2,
+        "name": "PlayStation"
+      }
+    },
+    {
+      "id": 49,
+      "name": "Xbox One",
+      "platform_family": {
+        "id": 3,
+        "name": "Xbox"
+      }
+    },
+    {
+      "id": 167,
+      "name": "PlayStation 5",
+      "platform_family": {
+        "id": 2,
+        "name": "PlayStation"
+      }
+    },
+    {
+      "id": 169,
+      "name": "Xbox Series X|S",
+      "platform_family": {
+        "id": 3,
+        "name": "Xbox"
+      }
+    }
+  ],
+  "genres": [
+    {
+      "id": 12,
+      "name": "Role-playing (RPG)"
+    },
+    {
+      "id": 31,
+      "name": "Adventure"
+    },
+    {
+      "id": 32,
+      "name": "Action"
+    }
+  ],
+  "involved_companies": [
+    {
+      "id": 1234,
+      "company": {
+        "id": 908,
+        "name": "CD Projekt RED"
+      }
+    },
+    {
+      "id": 1235,
+      "company": {
+        "id": 909,
+        "name": "CD Projekt"
+      }
+    }
+  ]
+}

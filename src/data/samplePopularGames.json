@@ -1,0 +1,75 @@
+[
+  {
+    "id": 1,
+    "name": "Elden Ring",
+    "cover": {
+      "url": "//images.igdb.com/igdb/image/upload/t_thumb/co4jni.jpg"
+    },
+    "platforms": [
+      { "id": 6, "name": "PC (Microsoft Windows)" },
+      { "id": 48, "name": "PlayStation 4" },
+      { "id": 49, "name": "Xbox One" }
+    ],
+    "videos": [
+      { "video_id": "E3Huy2cdih0" }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "God of War Ragnarök",
+    "cover": {
+      "url": "//images.igdb.com/igdb/image/upload/t_thumb/co5s5v.jpg"
+    },
+    "platforms": [
+      { "id": 48, "name": "PlayStation 4" },
+      { "id": 167, "name": "PlayStation 5" }
+    ],
+    "videos": [
+      { "video_id": "hfJ4Km46A-0" }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Cyberpunk 2077",
+    "cover": {
+      "url": "//images.igdb.com/igdb/image/upload/t_thumb/co2veo.jpg"
+    },
+    "platforms": [
+      { "id": 6, "name": "PC (Microsoft Windows)" },
+      { "id": 48, "name": "PlayStation 4" },
+      { "id": 49, "name": "Xbox One" }
+    ],
+    "videos": [
+      { "video_id": "UnA7tepsc7s" }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Red Dead Redemption 2",
+    "cover": {
+      "url": "//images.igdb.com/igdb/image/upload/t_thumb/co1q1f.jpg"
+    },
+    "platforms": [
+      { "id": 6, "name": "PC (Microsoft Windows)" },
+      { "id": 48, "name": "PlayStation 4" },
+      { "id": 49, "name": "Xbox One" }
+    ],
+    "videos": [
+      { "video_id": "gmA6MrX81z4" }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Baldur's Gate 3",
+    "cover": {
+      "url": "//images.igdb.com/igdb/image/upload/t_thumb/co5s7p.jpg"
+    },
+    "platforms": [
+      { "id": 6, "name": "PC (Microsoft Windows)" },
+      { "id": 167, "name": "PlayStation 5" }
+    ],
+    "videos": [
+      { "video_id": "OcP0WdH7rTs" }
+    ]
+  }
+]

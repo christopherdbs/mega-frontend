@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import GameCard from "../components/GameCard.vue";
 import Pagination from "../components/Pagination.vue";
 import Filter from "../components/Filter.vue";
+import PlatformNavbar from "../components/PlatformNavbar.vue";
 import { useIGDB } from "../composables/useIGDB";
 const {
     games,
@@ -11,6 +12,8 @@ const {
     totalPages,
     filter,
     filtersList,
+    family,
+    setFamily,
     setCurrentPage,
     setFilter,
     fetchGames,
@@ -50,12 +53,17 @@ const goToPage = (newPage) => {
     }
 };
 
-const sortBy = (newFilter) => {
-    setFilter(newFilter);
+const sortBy = (newSortValue) => {
+    setFilter(newSortValue);
+};
+
+const filterBy = (newFilter) => {
+    setFamily(newFilter);
 };
 </script>
 
 <template>
+    <PlatformNavbar :family="family" @update:platformFamily="filterBy"></PlatformNavbar>
     <div class="catalog-page">
         <h1>Catalog</h1>
         <Filter :filters="filtersList" :selected="filter" @update:filter="sortBy" class="sort" />

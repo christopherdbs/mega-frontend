@@ -6,7 +6,7 @@ import { RouterLink } from "vue-router";
     <nav>
         <div class="navbar">
             <div class="navbar-left">
-                <span class="icon"><RouterLink to="/"><img src="/src/assets/logo.png" width="65px" @click=""></img></RouterLink></span>
+                <span class="icon"><RouterLink to="/"><img src="/src/assets/logos/logo.png" width="65px" @click=""></img></RouterLink></span>
             </div>
 
             <ul class="navbar-links">
@@ -34,6 +34,7 @@ nav {
     width: 100vw;
     height: 75px;
     background: linear-gradient(90deg, #990c4483, #0202025e 45%);
+    z-index: 2;
 }
 
 .navbar {

@@ -1,29 +1,61 @@
 <script setup>
+import { ref, computed } from "vue";
+import axios from "axios";
+import GameCard from "../components/GameCard.vue";
+import Pagination from "../components/Pagination.vue";
+import Filter from "../components/Filter.vue";
+import { useIGDB } from "../composables/useIGDB";
 
+const { games, currentPage, itemsPerPage, totalPages, filter, fetchGames, platforms } = useIGDB();
+
+const activeIndex = ref(0);
+
+const activeGame = computed(() => {
+    if (games.value && games.value.length > 0) {
+        return games.value[activeIndex.value];
+    }
+    return null;
+});
+
+const activeGameBackgroundUrl = computed(() => {
+    if (activeGame.value && activeGame.value.cover && activeGame.value.cover.url) {
+        return `url(${activeGame.value.cover.url.replace("t_thumb", "t_1080p")})`;
+    }
+    return "none";
+});
+
+const activeGameFilteredPlatforms = computed(() => {
+    if (activeGame.value.platforms && activeGame.value.platforms.length > 0) {
+        return activeGame.value.platforms.filter((gamePlatform) =>
+            platforms.find((platform) => platform.id === gamePlatform.id)
+        );
+    }
+});
 </script>
 
 <template>
     <section class="highlights">
-        <div class="highlights-left">
-            <h1 class="game-title">Game Title</h1>
+        <div class="highlights-left" v-if="activeGame">
+            <h1 class="game-title">{{ activeGame.name }}</h1>
             <p class="game-description">
-
-            Lorem ipsum dolor sit amet. Et quasi repudiandae in velit repellendus nam quia nulla ex ducimus impedit ut doloremque quibusdam eum voluptates optio. Quo totam molestias qui temporibus optio et dolorem nihil ut sequi incidunt et molestiae impedit quo quis alias in internos dolor. Non dolores dignissimos et dicta labore aut rerum aliquid et cumque aliquam sit pariatur vero! Aut culpa eius aut quam impedit id neque inventore.
-
-            Qui dolor eius aut dolorum quia et voluptas nostrum. Non rerum quos vel accusantium molestias qui voluptatem labore et iste quam.
-
-            Vel dolores aspernatur qui nulla perspiciatis eum reprehenderit blanditiis est error voluptas id omnis perferendis. Aut laborum quisquam id quaerat unde sed mollitia sunt in esse sint ea laboriosam fuga sed ipsam harum. Sed quidem libero non unde laboriosam et natus enim sed velit officiis hic repellat modi. Non dolor animi et voluptas molestiae sed totam numquam ea necessitatibus unde.
+                {{ activeGame.summary }}
             </p>
 
             <div class="game-ratings">
-                <p>Ratings⭐: <span style="color: green;">_</span>/100</p>
+                <p>
+                    Ratings⭐:
+                    <span style="color: green">{{
+                        Math.round(activeGame.rating) ? Math.round(activeGame.rating) : "_"
+                    }}</span
+                    >/100
+                </p>
             </div>
 
             <div class="game-platforms">
                 <div class="game-platform">
-                    <div>PC</div>
-                    <div>PS4</div>
-                    <div>Xbox Series X</div>
+                    <div v-for="platform of activeGameFilteredPlatforms" :key="platform.id">
+                        {{ platform.name }}
+                    </div>
                 </div>
             </div>
 
@@ -35,16 +67,20 @@
     </section>
 </template>
 
-
 <style>
 .highlights {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 60px 80px;
-    background: 
-        linear-gradient(to right, #1c1b29 38%, #1c1b2981 50%, #1c1b293f 75%, transparent 100%),
-        url("../assets/witcher.jpg");
+    background: linear-gradient(
+            to right,
+            #1c1b29 38%,
+            #1c1b2981 50%,
+            #1c1b293f 75%,
+            transparent 100%
+        ),
+        v-bind(activeGameBackgroundUrl);
     background-size: cover;
     background-position: right center;
     background-repeat: no-repeat;
@@ -101,7 +137,7 @@
 
 .btn-buy {
     padding: 10px 30px;
-    background: #DA1061;
+    background: #da1061;
     border: none;
     border-radius: 30px;
     color: white;
@@ -117,9 +153,9 @@
 .btn-details {
     padding: 10px 30px;
     background: transparent;
-    border: 2px solid #DA1061;
+    border: 2px solid #da1061;
     border-radius: 30px;
-    color: #DA1061;
+    color: #da1061;
     font-size: 16px;
     cursor: pointer;
 }

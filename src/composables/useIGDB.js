@@ -1,6 +1,8 @@
 // useIGDB.js
-import { ref, watch, readonly } from "vue";
+import { ref, watch, readonly, computed } from "vue";
 import { platforms } from "../utils/platforms";
+import { platform_families } from "../utils/platform_families";
+
 import axios from "axios";
 
 const API_BASE_URL = "/api/v4/games";
@@ -16,6 +18,17 @@ export function useIGDB() {
     const itemsPerPage = 10;
     const totalPages = ref(1);
     const filter = ref("popularity");
+    const family = ref(0);
+    const platformsFiltered = computed(() => {
+        if (family.value != 0) {
+            return platforms
+                .filter((platform) => platform.family == family.value)
+                .map((platform) => platform.id);
+        } else {
+            return platforms.map((objet) => objet.id);
+        }
+    });
+    console.log(platformsFiltered);
     const filtersList = {
         popularity: "Most Popular",
         rating: "Best Rated",
@@ -24,8 +37,7 @@ export function useIGDB() {
         total_rating: "Best Critic Score",
         name: "Name (A-Z)",
     };
-    const getFamilyStr = () => {
-        const platform_ids = platforms.map((objet) => objet.id);
+    const getFamilyStr = (platform_ids) => {
         let str = "(";
         for (let i = 0; i < platform_ids.length; i++) {
             str += i != platform_ids.length - 1 ? platform_ids[i] + ", " : platform_ids[i];
@@ -62,11 +74,39 @@ export function useIGDB() {
         return executeQuery("games", query);
     };
 
+    const filterPlatformsInGames = () => {
+        if (!games.value) {
+            return games.value;
+        }
+        games.value = games.value.map((game) => {
+            const filteredGamePlatforms = game.platforms.filter((p) =>
+                platformsFiltered.value.includes(p.id)
+            );
+            let familyInfo = { id: null, logo: null };
+            console.log(game.name, filteredGamePlatforms);
+            if (family.value != 0) {
+                familyInfo.id = family.value;
+                familyInfo.logo = platform_families.find((f) => f.id == family.value).logo;
+            } else {
+                const primaryPlatformId = filteredGamePlatforms[0].id;
+                const platformRef = platforms.find((p) => p.id === primaryPlatformId);
+                familyInfo.id = platformRef.family;
+                familyInfo.logo = platform_families.find((f) => f.id == platformRef.family).logo;
+            }
+            console.log(game.name, familyInfo);
+            return {
+                ...game,
+                platforms: filteredGamePlatforms,
+                family: familyInfo,
+            };
+        });
+        console.log(games.value);
+    };
     const fetchGames = async () => {
         const currentOffset = (currentPage.value - 1) * itemsPerPage;
         const requestBody =
             "fields *, cover.url, cover.width, cover.height, platforms.name, platforms.platform_family.name, videos.name, videos.video_id; where videos != null & platforms = " +
-            getFamilyStr() +
+            getFamilyStr(platformsFiltered.value) +
             " & total_rating_count > 75 ; sort " +
             filter.value +
             " desc; limit " +
@@ -85,10 +125,12 @@ export function useIGDB() {
             },
         });
         games.value = response.data;
+        filterPlatformsInGames();
+        console.log(games.value);
         return response;
     };
     watch(
-        [currentPage, filter],
+        [currentPage, filter, family],
         async () => {
             console.log(
                 `Dépendance changée : Nouvelle page: ${currentPage.value}, Nouveau filtre: ${filter.value}`
@@ -118,6 +160,10 @@ export function useIGDB() {
         filter.value = value;
     }
 
+    function setFamily(value) {
+        family.value = value;
+    }
+
     function setGames(value) {
         games.value = value;
     }
@@ -131,7 +177,9 @@ export function useIGDB() {
         totalPages: readonly(totalPages),
         filter: readonly(filter),
         filtersList: readonly(filtersList),
-        platforms,
+        platforms: readonly(platforms),
+        family: readonly(family),
+        setFamily,
         setCurrentPage,
         setTotalPages,
         setGames,

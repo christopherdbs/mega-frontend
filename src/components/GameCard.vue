@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 const props = defineProps(["data"]);
-const platform_logo = props.data.platforms[0]?.platform_family?.name;
 const price = props;
 const isHovering = ref(null);
 const playerRef = ref(null);
@@ -112,11 +111,17 @@ const router = useRouter();
 const goToDetail = () => {
     router.push(`/game/${props.data.id}`);
 };
+console.log(props.data.name, props.data.family);
 </script>
 
 <template>
     <div class="relative">
-        <div class="card" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click="goToDetail">
+        <div
+            class="card"
+            @mouseenter="handleMouseEnter"
+            @mouseleave="handleMouseLeave"
+            @click="goToDetail"
+        >
             <div class="card-img">
                 <iframe
                     :id="`player-${props.data.id}`"
@@ -148,8 +153,8 @@ const goToDetail = () => {
             </div>
             <div class="platform-logo" v-if="!isHovering">
                 <img
-                    v-if="platform_logo"
-                    :src="'/src/assets/' + props.data.platforms[0]?.platform_family.name + '.svg'"
+                    v-if="props.data.family.logo"
+                    :src="'/src/assets/logos/' + props.data.family.logo"
                     height="40px"
                 />
             </div>

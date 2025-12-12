@@ -1,29 +1,22 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
 import GameCard from "../components/GameCard.vue";
 import Pagination from "../components/Pagination.vue";
 import Filter from "../components/Filter.vue";
-import { platforms } from "../utils/platforms";
+import { useIGDB } from "../composables/useIGDB";
+const {
+    games,
+    currentPage,
+    itemsPerPage,
+    totalPages,
+    filter,
+    filtersList,
+    setCurrentPage,
+    setFilter,
+    fetchGames,
+} = useIGDB();
 
-const CLIENT_ID = import.meta.env.VITE_IGDB_CLIENT_ID;
-const ACCESS_TOKEN = import.meta.env.VITE_IGDB_ACCESS_TOKEN;
-const games = ref([]);
-const currentPage = ref(1);
-const itemsPerPage = 10;
-const totalPages = ref(1);
-const filter = ref("popularity");
-
-const getFamilyStr = () => {
-    const platform_ids = platforms.map((objet) => objet.id);
-    let str = "(";
-    for (let i = 0; i < platform_ids.length; i++) {
-        str += i != platform_ids.length - 1 ? platform_ids[i] + ", " : platform_ids[i];
-    }
-    str += ")";
-    return str;
-};
-
+/*
 const fetchGames = async () => {
     const currentOffset = (currentPage.value - 1) * itemsPerPage;
     const requestBody =
@@ -49,37 +42,16 @@ const fetchGames = async () => {
     games.value = response.data;
     return response;
 };
-
-onMounted(async () => {
-    try {
-        const response = await fetchGames();
-        const totalCount = parseInt(response.headers["x-count"]) || 0;
-        totalPages.value = Math.ceil(totalCount / itemsPerPage);
-    } catch (err) {
-        console.error("Error while fetching games:", err);
-    } finally {
-    }
-});
+*/
 
 const goToPage = (newPage) => {
     if (newPage <= totalPages.value && newPage >= 1) {
-        currentPage.value = newPage;
-        fetchGames();
+        setCurrentPage(newPage);
     }
 };
 
 const sortBy = (newFilter) => {
-    filter.value = newFilter;
-    fetchGames();
-};
-
-const filtersList = {
-    popularity: "Most Popular",
-    rating: "Best Rated",
-    first_release_date: "New Releases (Date)",
-    hypes: "Most Anticipated",
-    total_rating: "Best Critic Score",
-    name: "Name (A-Z)",
+    setFilter(newFilter);
 };
 </script>
 

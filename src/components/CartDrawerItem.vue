@@ -2,6 +2,7 @@
 import { RouterLink } from "vue-router";
 import { ref, onMounted, inject, computed } from "vue";
 import { platform_families } from "../utils/platform_families";
+import CartItem from "./CartItem.vue";
 import { useStorage } from "../composables/useStorage";
 const props = defineProps({
     game: {
@@ -48,11 +49,10 @@ const clampQuantity = () => {
 
     updateQuantity(props.game.id, quantity.value);
 };
-console.log(props.game);
 </script>
 
 <template>
-    <div class="cart-item">
+    <div class="cartItem">
         <img
             :src="
                 game.cover
@@ -63,17 +63,11 @@ console.log(props.game);
         <div class="cartItemDescription">
             <p class="game-name">{{ game.name }}</p>
             <p class="game-platform">
-                <!--<img
-                    :src="
-                        '/src/assets/logos/' +
-                        platform_families.find((pf) => game.family == pf.id).logo
-                    "
-                />-->
                 {{ platform_families.find((pf) => game.family == platform_families.id).name }}
             </p>
+            <p class="game-price">{{ game.price }} €</p>
         </div>
         <div class="cartItemControls">
-            <p class="price">{{ game.price }} €</p>
             <div class="quantity-control">
                 <button class="button-quantity" @click="decrement" :disabled="quantity <= 1">
                     -
@@ -90,27 +84,26 @@ console.log(props.game);
                 <button class="button-quantity" @click="increment" :disabled="quantity >= 10">
                     +
                 </button>
-                <div @click="remove(game.id)" class="remove-btn">
-                    <i class="fa-solid fa-trash-can"></i>
-                </div>
+            </div>
+
+            <div @click="remove(game.id)" class="remove-btn">
+                <i class="fa-solid fa-trash-can"></i>
             </div>
         </div>
     </div>
 </template>
 
 <style>
-.cart-item {
+.cartItem {
     background-color: #3a3853;
     width: auto;
     border-radius: 12px;
     color: white;
     display: flex;
     gap: 10px;
-    padding: 25px;
 }
-.cart-item img {
-    width: 15%;
-    border-radius: 12px;
+.cartItem img {
+    width: 20%;
 }
 
 .remove-btn {
@@ -121,19 +114,16 @@ console.log(props.game);
 
 .remove-btn i {
     font-size: 20px;
-    margin-left: 20px;
 }
 
 .game-name {
-    font-size: 20px;
+    font-size: 16px;
     margin: 0;
 }
 
-.price {
-    font-size: 22px;
-    font-weight: bold;
+.game-price {
+    font-size: 18px;
     margin: 0;
-    text-align: right;
 }
 
 .cartItemDescription {
@@ -199,7 +189,7 @@ input[type="number"] {
 .cartItemControls {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 10px;
 }
 
 .game-platform {

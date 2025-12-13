@@ -17,7 +17,9 @@ provide("review-drawer-key", reviewDrawerState);
 
 <template>
     <Navbar />
-    <RouterView class="main"></RouterView>
+    <div class="main">
+        <RouterView></RouterView>
+    </div>
     <CartDrawer></CartDrawer>
     <ReviewDrawer></ReviewDrawer>
     <Footer />

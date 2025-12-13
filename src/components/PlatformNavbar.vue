@@ -33,15 +33,11 @@ function changeFamily(family) {
                     v-for="family in platform_families"
                     @click="changeFamily(family.id)"
                 >
-                    <span class="icon"
+                    <span class="platform-icon"
                         ><img :src="`/src/assets/icons/${family.icon}`" alt="icon" /></span
                     >{{ family.name }}
                 </li>
             </ul>
-
-            <div class="platform-navbar-right">
-                <span class="icon"></span>
-            </div>
         </div>
     </div>
 </template>
@@ -127,7 +123,7 @@ function changeFamily(family) {
     gap: 10px;
 }
 
-.icon img {
+.platform-icon img {
     width: 25px;
     display: flex;
     align-items: center;

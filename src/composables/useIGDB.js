@@ -177,5 +177,6 @@ export function useIGDB() {
         setGames,
         setFilter,
         fetchGames,
+        fetchPopularGames,
     };
 }

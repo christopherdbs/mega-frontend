@@ -19,34 +19,6 @@ const {
     fetchGames,
 } = useIGDB();
 
-/*
-const fetchGames = async () => {
-    const currentOffset = (currentPage.value - 1) * itemsPerPage;
-    const requestBody =
-        "fields *, cover.url, cover.width, cover.height, platforms.name, platforms.platform_family.name, videos.name, videos.video_id; where videos != null & platforms = " +
-        getFamilyStr() +
-        "; sort " +
-        filter.value +
-        " desc; limit " +
-        itemsPerPage +
-        "; offset " +
-        currentOffset +
-        ";";
-    const response = await axios({
-        method: "POST",
-        url: "/api/v4/games",
-        data: requestBody,
-        headers: {
-            "Client-ID": CLIENT_ID,
-            Authorization: `Bearer ${ACCESS_TOKEN}`,
-            "X-Total-Count": "1",
-        },
-    });
-    games.value = response.data;
-    return response;
-};
-*/
-
 const goToPage = (newPage) => {
     if (newPage <= totalPages.value && newPage >= 1) {
         setCurrentPage(newPage);

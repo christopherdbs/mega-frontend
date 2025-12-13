@@ -15,7 +15,7 @@ import { RouterLink } from "vue-router";
             </ul>
 
             <div class="navbar-right">
-                <button class="cart">
+                <button class="cart" @click="openCart">
                     <i class="fa-solid fa-basket-shopping"></i>
                 </button>
                 <button class="user">

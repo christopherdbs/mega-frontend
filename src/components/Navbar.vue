@@ -6,7 +6,10 @@ import { RouterLink } from "vue-router";
     <nav>
         <div class="navbar">
             <div class="navbar-left">
-                <span class="icon"><RouterLink to="/"><img src="/src/assets/logos/logo.png" width="65px" ></img></RouterLink></span>
+                <span class="icon"
+                    ><RouterLink to="/"
+                        ><img src="/src/assets/logos/logo.png" width="65px" /></RouterLink
+                ></span>
             </div>
 
             <ul class="navbar-links">
@@ -15,13 +18,16 @@ import { RouterLink } from "vue-router";
             </ul>
 
             <div class="navbar-right">
-                <button class="cart" @click="openCart">
-                    <i class="fa-solid fa-basket-shopping"></i>
-                </button>
-                <button class="user">
-                    s
-                    <i class="fa-solid fa-circle-user"></i>
-                </button>
+                <RouterLink to="/cart">
+                    <button class="cart-button" @click="openCart">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+                </RouterLink>
+                <RouterLink to="/connexion">
+                    <button class="user">
+                        <i class="fa-solid fa-circle-user"></i>
+                    </button>
+                </RouterLink>
             </div>
         </div>
     </nav>

@@ -18,37 +18,37 @@ const categories = ref([
         id: 1,
         name: "Sports & Racing",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1r7h.png",
-        link: "#sports"
+        link: "#sports",
     },
     {
         id: 2,
         name: "RPG",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2lbd.png",
-        link: "#rpg"
+        link: "#rpg",
     },
     {
         id: 3,
         name: "Adventure",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1tamu.png",
-        link: "#adventure"
+        link: "#adventure",
     },
     {
         id: 4,
         name: "Strategy",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2vec.png",
-        link: "#strategy"
+        link: "#strategy",
     },
     {
         id: 5,
         name: "Survival",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2ft5.png",
-        link: "#survival"
+        link: "#survival",
     },
     {
         id: 6,
         name: "Action",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1r7x.png",
-        link: "#action"
+        link: "#action",
     },
 ]);
 const { openDrawer } = inject("cart-drawer-key");
@@ -74,7 +74,13 @@ const getPlatformLogo = (platformName) => {
     if (name.includes("playstation")) return "/src/assets/logos/Playstation.svg";
     if (name.includes("xbox")) return "/src/assets/logos/Xbox.svg";
     if (name.includes("nintendo")) return "/src/assets/logos/Nintendo.svg";
-    if (name.includes("pc") || name.includes("steam") || name.includes("linux") || name.includes("mac")) return "/src/assets/logos/Steam.svg";
+    if (
+        name.includes("pc") ||
+        name.includes("steam") ||
+        name.includes("linux") ||
+        name.includes("mac")
+    )
+        return "/src/assets/logos/Steam.svg";
     return null;
 };
 
@@ -102,7 +108,6 @@ const fetchGameDetails = async (id) => {
             },
         });
         game.value = response.data[0];
-<<<<<<< HEAD
         game.price = game.rating_count;
 
         // Reset video state when game changes
@@ -117,11 +122,9 @@ const fetchGameDetails = async (id) => {
         } else {
             similarGames.value = [];
         }
-=======
-        game.value.price = calculatePrice(game.value);
->>>>>>> 60b3913 (feat: add gamecard prices, cart total price and quantity)
     } catch (err) {
         console.error("Error fetching game details:", err);
+        console.log("Falling back to sample data");
         game.value = sampleGameData;
     }
 };
@@ -132,7 +135,7 @@ const fetchSimilarGames = async (ids) => {
     if (!ids || ids.length === 0) return;
 
     // Take first 6 similar games
-    const targetIds = ids.slice(0, 6).join(',');
+    const targetIds = ids.slice(0, 6).join(",");
 
     const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id; where id = (${targetIds});`;
 
@@ -231,7 +234,7 @@ function initializeHeroPlayer() {
                     if (event.data === YT.PlayerState.PLAYING) {
                         heroVideoReady.value = true;
                     }
-                }
+                },
             },
         });
     });
@@ -267,16 +270,24 @@ watch(
 <template>
     <div class="game-detail-page" v-if="game">
         <!-- Hero Section -->
-        <div class="hero" :style="{
-            backgroundImage: `linear-gradient(to right, #1c1b29 10%, rgba(28, 27, 41, 0.8) 50%, rgba(28, 27, 41, 0.4) 100%), url(${getImageUrl(
-                game.screenshots?.[0] || game.cover,
-                't_1080p'
-            )})`,
-        }">
-            <div class="hero-video-container" :class="{ 'visible': heroVideoReady }">
-                <iframe v-if="game.videos?.[0]" id="hero-player-frame" :src="getEmbedUrl(game.videos[0].video_id)"
-                    frameborder="0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
+        <div
+            class="hero"
+            :style="{
+                backgroundImage: `linear-gradient(to right, #1c1b29 10%, rgba(28, 27, 41, 0.8) 50%, rgba(28, 27, 41, 0.4) 100%), url(${getImageUrl(
+                    game.screenshots?.[0] || game.cover,
+                    't_1080p'
+                )})`,
+            }"
+        >
+            <div class="hero-video-container" :class="{ visible: heroVideoReady }">
+                <iframe
+                    v-if="game.videos?.[0]"
+                    id="hero-player-frame"
+                    :src="getEmbedUrl(game.videos[0].video_id)"
+                    frameborder="0"
+                    allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
             </div>
             <div class="hero-content">
                 <!-- Breadcrumb removed as requested -->
@@ -287,7 +298,8 @@ watch(
 
                 <div class="game-meta">
                     <div class="rating-row-banner">
-                        <span class="score">{{ Math.round(game.rating || 0) }}</span>/100
+                        <span class="score">{{ Math.round(game.rating || 0) }}</span
+                        >/100
                     </div>
 
                     <div class="meta-info">
@@ -307,9 +319,17 @@ watch(
                         <div class="meta-item">
                             <strong>Available For:</strong>
                             <div class="platform-icons-row">
-                                <span v-for="p in game.platforms?.slice(0, 4)" :key="p.id" class="platform-icon-wrap">
-                                    <img v-if="getPlatformLogo(p.name)" :src="getPlatformLogo(p.name)" :alt="p.name"
-                                        class="mini-logo" />
+                                <span
+                                    v-for="p in game.platforms?.slice(0, 4)"
+                                    :key="p.id"
+                                    class="platform-icon-wrap"
+                                >
+                                    <img
+                                        v-if="getPlatformLogo(p.name)"
+                                        :src="getPlatformLogo(p.name)"
+                                        :alt="p.name"
+                                        class="mini-logo"
+                                    />
                                     <span v-else>{{ p.name }}</span>
                                 </span>
                             </div>
@@ -326,9 +346,17 @@ watch(
             <div class="sidebar-right">
                 <h3><span class="highlight">Similar</span> Games</h3>
                 <div class="sidebar-games">
-                    <div v-for="popGame in similarGames" :key="popGame.id" class="sidebar-game-card">
+                    <div
+                        v-for="popGame in similarGames"
+                        :key="popGame.id"
+                        class="sidebar-game-card"
+                    >
                         <router-link :to="`/game/${popGame.id}`">
-                            <img :src="getImageUrl(popGame.cover, 't_cover_big')" alt="Cover" class="sidebar-cover" />
+                            <img
+                                :src="getImageUrl(popGame.cover, 't_cover_big')"
+                                alt="Cover"
+                                class="sidebar-cover"
+                            />
                         </router-link>
                     </div>
                 </div>
@@ -374,7 +402,8 @@ watch(
                         <h4>{{ game.name }}</h4>
                         <p>{{ game.summary?.substring(0, 200) }}...</p>
                         <div class="rating-row">
-                            <span class="score">{{ Math.round(game.rating || 0) }}</span>/100
+                            <span class="score">{{ Math.round(game.rating || 0) }}</span
+                            >/100
                         </div>
                         <button class="btn btn-primary">Buy Now</button>
                     </div>
@@ -383,9 +412,14 @@ watch(
                 <div class="trailer-gallery">
                     <h3>Trailer & Gallery</h3>
                     <div class="trailer-wrapper">
-                        <iframe v-if="game.videos?.[0]" width="100%" height="250"
-                            :src="`https://www.youtube.com/embed/${game.videos[0].video_id}`" frameborder="0"
-                            allowfullscreen></iframe>
+                        <iframe
+                            v-if="game.videos?.[0]"
+                            width="100%"
+                            height="250"
+                            :src="`https://www.youtube.com/embed/${game.videos[0].video_id}`"
+                            frameborder="0"
+                            allowfullscreen
+                        ></iframe>
                     </div>
                 </div>
 

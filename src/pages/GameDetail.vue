@@ -80,11 +80,11 @@ const getPlatformLogo = (platformName) => {
 
 const CLIENT_ID = import.meta.env.VITE_IGDB_CLIENT_ID;
 const ACCESS_TOKEN = import.meta.env.VITE_IGDB_ACCESS_TOKEN;
+const { calculatePrice } = useIGDB();
 
 const fetchGameDetails = async (id) => {
     // If no API credentials, use sample data
     if (!CLIENT_ID || !ACCESS_TOKEN) {
-        console.log("Using sample data (no API credentials found)");
         game.value = sampleGameData;
         return;
     }
@@ -102,6 +102,7 @@ const fetchGameDetails = async (id) => {
             },
         });
         game.value = response.data[0];
+<<<<<<< HEAD
         game.price = game.rating_count;
 
         // Reset video state when game changes
@@ -116,9 +117,11 @@ const fetchGameDetails = async (id) => {
         } else {
             similarGames.value = [];
         }
+=======
+        game.value.price = calculatePrice(game.value);
+>>>>>>> 60b3913 (feat: add gamecard prices, cart total price and quantity)
     } catch (err) {
         console.error("Error fetching game details:", err);
-        console.log("Falling back to sample data");
         game.value = sampleGameData;
     }
 };

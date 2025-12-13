@@ -19,6 +19,10 @@ export function useIGDB() {
     const totalPages = ref(1);
     const filter = ref("popularity");
     const family = ref(0);
+    const MIN_PRICE = 20;
+    const MAX_PRICE = 80;
+    const MAX_AGE_DEPRECIATION_YEARS = 5;
+    const DEPRECIATION_RATE_PER_YEAR = 0.16;
 
     const platformsFiltered = computed(() => {
         if (family.value != 0) {
@@ -99,6 +103,43 @@ export function useIGDB() {
             };
         });
     };
+
+    function addPrice() {
+        if (!games.value) {
+            return games.value;
+        }
+        games.value = games.value.map((game) => {
+            return {
+                ...game,
+                price: calculatePrice(game),
+            };
+        });
+    }
+
+    function calculatePrice(game) {
+        if (
+            !game ||
+            typeof game.rating !== "number" ||
+            typeof game.first_release_date !== "number"
+        ) {
+            return (MIN_PRICE + MAX_PRICE) / 2 - 0.01;
+        }
+
+        const rating = Math.max(0, Math.min(100, game.rating));
+        const priceRange = MAX_PRICE - MIN_PRICE;
+        const basePrice = (rating / 100) * priceRange + MIN_PRICE;
+        const releaseDate = new Date(game.first_release_date * 1000);
+        const today = new Date();
+        const diffTime = Math.abs(today - releaseDate);
+        const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25);
+        const ageForDepreciation = Math.min(diffYears, MAX_AGE_DEPRECIATION_YEARS);
+        const totalDepreciationRate = ageForDepreciation * DEPRECIATION_RATE_PER_YEAR;
+        const depreciationAmount = basePrice * totalDepreciationRate;
+        let finalPrice = basePrice - depreciationAmount;
+        finalPrice = Math.max(3.99, finalPrice);
+
+        return parseFloat(finalPrice.toFixed(2));
+    }
     const fetchGames = async () => {
         const currentOffset = (currentPage.value - 1) * itemsPerPage;
         const requestBody =
@@ -123,6 +164,7 @@ export function useIGDB() {
         });
         games.value = response.data;
         filterPlatformsInGames();
+        addPrice();
         return response;
     };
     watch(
@@ -178,5 +220,6 @@ export function useIGDB() {
         setFilter,
         fetchGames,
         fetchPopularGames,
+        calculatePrice,
     };
 }

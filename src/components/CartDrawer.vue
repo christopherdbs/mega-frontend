@@ -15,6 +15,18 @@ const itemCount = computed(() => {
     }, 0);
 });
 
+const totalPrice = computed(() => {
+    console.log("ItemCount: RECALCUL EN COURS");
+    return parseFloat(
+        games.value
+            .reduce((total, game) => {
+                console.log(total, game);
+                return total + game.quantity * game.price;
+            }, 0)
+            .toFixed(2)
+    ).toFixed(2);
+});
+
 function changeFamily(family) {
     emit("update:platformFamily", family);
 }
@@ -32,6 +44,10 @@ function changeFamily(family) {
         <div class="drawer-content">
             <div class="drawer-items">
                 <CartItem :game="game" v-for="game in games"></CartItem>
+            </div>
+            <div class="total-cart">
+                <span id="text-total">Total Cart</span>
+                <span id="total-amount">{{ totalPrice }} €</span>
             </div>
             <button id="go-cart-button">Go to the cart</button>
         </div>
@@ -114,5 +130,12 @@ function changeFamily(family) {
 #go-cart-button:hover {
     background-color: #ff0055;
     cursor: pointer;
+}
+
+.total-cart {
+    display: flex;
+    justify-content: space-between;
+    font-size: 25px;
+    margin-bottom: 5px;
 }
 </style>

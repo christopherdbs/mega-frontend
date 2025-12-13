@@ -10,19 +10,7 @@ const props = defineProps({
         required: true,
     },
 });
-const emit = defineEmits(["update:platformFamily"]);
-const { isDrawerOpen, closeDrawer } = inject("cart-drawer-key");
 const { remove, updateQuantity } = useStorage();
-
-onMounted(() => {
-    const games = computed(() => {
-        get();
-    });
-});
-
-function changeFamily(family) {
-    emit("update:platformFamily", family);
-}
 
 const quantity = ref(props.game.quantity);
 const MAX_QUANTITY = 10;
@@ -31,18 +19,20 @@ const MIN_QUANTITY = 1;
 const increment = () => {
     if (quantity.value < MAX_QUANTITY) {
         quantity.value = quantity.value + 1;
+        clampQuantity();
     }
 };
 
 const decrement = () => {
     if (quantity.value > MIN_QUANTITY) {
         quantity.value = quantity.value - 1;
+        clampQuantity();
     }
 };
 
 const clampQuantity = () => {
     let value = quantity.value;
-
+    console.log(clampQuantity, value);
     if (value === null || value === undefined || isNaN(value)) {
         quantity.value = MIN_QUANTITY;
         return;
@@ -57,6 +47,7 @@ const clampQuantity = () => {
         quantity.value = MAX_QUANTITY;
         return;
     }
+
     updateQuantity(props.game.id, quantity.value);
 };
 </script>
@@ -75,7 +66,7 @@ const clampQuantity = () => {
             <p class="game-platform">
                 {{ platform_families.find((pf) => game.family == platform_families.id).name }}
             </p>
-            <p class="game-price">{{ game.price }}</p>
+            <p class="game-price">{{ game.price }} €</p>
         </div>
         <div class="cartItemControls">
             <div class="quantity-control">
@@ -88,7 +79,7 @@ const clampQuantity = () => {
                     v-model.number="quantity"
                     min="1"
                     max="10"
-                    @blur="clampQuantity"
+                    @change="clampQuantity"
                 />
 
                 <button class="button-quantity" @click="increment" :disabled="quantity >= 10">
@@ -131,8 +122,16 @@ const clampQuantity = () => {
     margin: 0;
 }
 
+.game-price {
+    font-size: 18px;
+    margin: 0;
+}
+
 .cartItemDescription {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .quantity-control {
@@ -192,5 +191,11 @@ input[type="number"] {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.game-platform {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 200;
+    margin: 0;
 }
 </style>

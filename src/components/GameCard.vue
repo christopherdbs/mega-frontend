@@ -82,9 +82,7 @@ const changeHasPlayed = (iframeId) => {
     if (!hasPlayedOnce.value) {
         isBuffering.value = false;
         hasPlayedOnce.value = true;
-        console.log(isHovering.value);
         if (!isHovering.value) pauseVideo();
-        console.log(`[${iframeId}] Prêt ! État final : ${playerRef.value.getPlayerState()}`);
     }
 };
 
@@ -160,7 +158,7 @@ console.log(props.data.name, props.data.family);
             </div>
             <div class="card-description" v-if="!isHovering">
                 <div class="card-name">{{ props.data.name }}</div>
-                <div class="card-price">{{ props.data.rating_count }} €</div>
+                <div class="card-price">{{ props.data.price }} €</div>
             </div>
         </div>
     </div>

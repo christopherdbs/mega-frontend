@@ -153,7 +153,7 @@ console.log(props.data.name, props.data.family);
             </div>
             <div class="platform-logo" v-if="!isHovering">
                 <img
-                    v-if="props.data.family.logo"
+                    v-if="props.data.family?.logo"
                     :src="'/src/assets/logos/' + props.data.family.logo"
                     height="40px"
                 />

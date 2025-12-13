@@ -1,11 +1,12 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, inject } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import GameCard from "../components/GameCard.vue";
 import "../styles/GameDetail.css";
 import sampleGameData from "../data/sampleGameDetail.json";
 import samplePopularGames from "../data/samplePopularGames.json";
+import { useStorage } from "../composables/useStorage";
 
 const route = useRoute();
 const game = ref(null);
@@ -43,6 +44,8 @@ const categories = ref([
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1r7x.png",
     },
 ]);
+const { openDrawer } = inject("cart-drawer-key");
+const { add } = useStorage();
 
 // Helper to format date
 const formatDate = (timestamp) => {
@@ -81,6 +84,7 @@ const fetchGameDetails = async (id) => {
             },
         });
         game.value = response.data[0];
+        game.price = game.rating_count;
     } catch (err) {
         console.error("Error fetching game details:", err);
         console.log("Falling back to sample data");
@@ -138,6 +142,12 @@ const fetchTrendingGames = async () => {
     }
 };
 
+const emit = defineEmits(["update:addToCart"]);
+
+const addToCart = (game) => {
+    add(game);
+    openDrawer();
+};
 onMounted(() => {
     if (route.params.id) {
         fetchGameDetails(route.params.id);
@@ -236,7 +246,7 @@ watch(
                 </div>
 
                 <div class="actions">
-                    <button class="btn btn-primary">Buy Now</button>
+                    <button class="btn btn-primary" @click="addToCart(game)">Buy Now</button>
                     <button class="btn btn-secondary">Game review</button>
                 </div>
             </div>

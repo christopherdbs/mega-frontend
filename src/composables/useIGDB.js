@@ -19,6 +19,7 @@ export function useIGDB() {
     const totalPages = ref(1);
     const filter = ref("popularity");
     const family = ref(0);
+
     const platformsFiltered = computed(() => {
         if (family.value != 0) {
             return platforms
@@ -28,7 +29,6 @@ export function useIGDB() {
             return platforms.map((objet) => objet.id);
         }
     });
-    console.log(platformsFiltered);
     const filtersList = {
         popularity: "Most Popular",
         rating: "Best Rated",
@@ -83,7 +83,6 @@ export function useIGDB() {
                 platformsFiltered.value.includes(p.id)
             );
             let familyInfo = { id: null, logo: null };
-            console.log(game.name, filteredGamePlatforms);
             if (family.value != 0) {
                 familyInfo.id = family.value;
                 familyInfo.logo = platform_families.find((f) => f.id == family.value).logo;
@@ -93,14 +92,12 @@ export function useIGDB() {
                 familyInfo.id = platformRef.family;
                 familyInfo.logo = platform_families.find((f) => f.id == platformRef.family).logo;
             }
-            console.log(game.name, familyInfo);
             return {
                 ...game,
                 platforms: filteredGamePlatforms,
                 family: familyInfo,
             };
         });
-        console.log(games.value);
     };
     const fetchGames = async () => {
         const currentOffset = (currentPage.value - 1) * itemsPerPage;
@@ -126,18 +123,13 @@ export function useIGDB() {
         });
         games.value = response.data;
         filterPlatformsInGames();
-        console.log(games.value);
         return response;
     };
     watch(
         [currentPage, filter, family],
         async () => {
-            console.log(
-                `Dépendance changée : Nouvelle page: ${currentPage.value}, Nouveau filtre: ${filter.value}`
-            );
             try {
                 const response = await fetchGames();
-                console.log(response.headers);
                 const totalCount = parseInt(response.headers["x-count"]) || 0;
                 totalPages.value = Math.ceil(totalCount / itemsPerPage);
             } catch (err) {

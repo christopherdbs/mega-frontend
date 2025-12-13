@@ -1,9 +1,9 @@
 export const platform_families = [
     {
         id: 1,
-        name: "PlayStation",
+        name: "Playstation",
         icon: "playstation_icon.svg",
-        logo: "PlayStation.svg",
+        logo: "Playstation.svg",
     },
     {
         id: 2,

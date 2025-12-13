@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import GameCard from "../components/GameCard.vue";
 import Pagination from "../components/Pagination.vue";
 import Filter from "../components/Filter.vue";
@@ -60,6 +60,19 @@ const sortBy = (newSortValue) => {
 const filterBy = (newFilter) => {
     setFamily(newFilter);
 };
+
+const chunkArray = (array, size) => {
+    const chunkedArr = [];
+    for (let i = 0; i < array.length; i += size) {
+        chunkedArr.push(array.slice(i, i + size));
+    }
+    return chunkedArr;
+};
+
+const gameRows = computed(() => {
+    if (!games.value) return [];
+    return chunkArray(games.value, 5);
+});
 </script>
 
 <template>
@@ -68,9 +81,11 @@ const filterBy = (newFilter) => {
         <h1>Catalog</h1>
         <Filter :filters="filtersList" :selected="filter" @update:filter="sortBy" class="sort" />
         <div class="catalog">
-            <template v-for="game in games" :key="game.id">
-                <GameCard :data="game" v-if="game.videos && game.videos.length > 0" />
-            </template>
+            <div class="game-row" v-for="(row, rowIndex) in gameRows" :key="rowIndex">
+                <template v-for="game in row" :key="game.id">
+                    <GameCard :data="game" v-if="game.videos && game.videos.length > 0" />
+                </template>
+            </div>
         </div>
         <div>
             <Pagination
@@ -93,12 +108,18 @@ const filterBy = (newFilter) => {
     color: white;
 }
 .catalog {
+    width: 100%;
+    margin: auto;
+}
+
+.game-row {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     margin: auto;
     gap: 20px;
     justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .sort {

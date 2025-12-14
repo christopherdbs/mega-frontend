@@ -57,7 +57,7 @@ const clampQuantity = () => {
             :src="
                 game.cover
                     ? game.cover.url.replace('t_thumb', 't_original')
-                    : '/src/assets/missing_cover.png'
+                    : '/missing_cover.png'
             "
         />
         <div class="cartItemDescription">

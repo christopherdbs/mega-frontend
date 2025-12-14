@@ -9,7 +9,7 @@ import SearchBar from "./SearchBar.vue";
             <div class="navbar-left">
                 <span class="icon"
                     ><RouterLink to="/"
-                        ><img src="/src/assets/logos/logo.png" width="65px" /></RouterLink
+                        ><img src="/logos/logo.png" width="65px" /></RouterLink
                 ></span>
             </div>
 

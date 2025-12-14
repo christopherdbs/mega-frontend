@@ -57,7 +57,7 @@ console.log(props.game);
             :src="
                 game.cover
                     ? game.cover.url.replace('t_thumb', 't_original')
-                    : '/src/assets/missing_cover.png'
+                    : '/missing_cover.png'
             "
         />
         <div class="cartItemDescription">
@@ -65,7 +65,7 @@ console.log(props.game);
             <p class="game-platform">
                 <!--<img
                     :src="
-                        '/src/assets/logos/' +
+                        '/logos/' +
                         platform_families.find((pf) => game.family == pf.id).logo
                     "
                 />-->

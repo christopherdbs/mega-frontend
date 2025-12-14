@@ -110,7 +110,7 @@ const addToCart = (game) => {
                             >
                                 <img
                                     v-if="p.name"
-                                    :src="`/src/assets/logos/${p.logo}`"
+                                    :src="`/logos/${p.logo}`"
                                     :alt="p.name"
                                     class="mini-logo"
                                 />

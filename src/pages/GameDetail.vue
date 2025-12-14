@@ -77,10 +77,10 @@ const getImageUrl = (image, size = "t_1080p") => {
 
 const getPlatformLogo = (platformName) => {
     const name = platformName.toLowerCase();
-    if (name.includes("playstation")) return "/src/assets/logos/Playstation.svg";
-    if (name.includes("xbox")) return "/src/assets/logos/Xbox.svg";
-    if (name.includes("nintendo")) return "/src/assets/logos/Nintendo.svg";
-    if (name.includes("pc") || name.includes("steam") || name.includes("linux") || name.includes("mac")) return "/src/assets/logos/Steam.svg";
+    if (name.includes("playstation")) return "/logos/Playstation.svg";
+    if (name.includes("xbox")) return "/logos/Xbox.svg";
+    if (name.includes("nintendo")) return "/logos/Nintendo.svg";
+    if (name.includes("pc") || name.includes("steam") || name.includes("linux") || name.includes("mac")) return "/logos/Steam.svg";
     return null;
 };
 
@@ -305,7 +305,7 @@ watch(
                                 >
                                     <img
                                         v-if="p.name"
-                                        :src="`/src/assets/logos/${p.logo}`"
+                                        :src="`/logos/${p.logo}`"
                                         :alt="p.name"
                                         class="mini-logo"
                                     />
@@ -409,6 +409,6 @@ watch(
         </div>
     </div>
     <div v-else class="loading-container">
-        <img src="../assets/logos/logo.png" alt="Loading..." class="loading-logo" />
+        <img src="/logos/logo.png" alt="Loading..." class="loading-logo" />
     </div>
 </template>

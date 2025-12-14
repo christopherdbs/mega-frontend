@@ -3,7 +3,7 @@
 
 <template>
     <div class="loading-container">
-        <img src="../assets/logos/logo.png" alt="Loading..." class="loading-logo" />
+        <img src="/logos/logo.png" alt="Loading..." class="loading-logo" />
     </div>
 </template>
 

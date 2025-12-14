@@ -18,7 +18,7 @@ watch(
                 :src="
                     data.cover
                         ? data.cover.url.replace('t_thumb', 't_original')
-                        : '/src/assets/missing_cover.png'
+                        : '/missing_cover.png'
                 "
                 width="200px"
                 @mouseenter="isHovering = true"

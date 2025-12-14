@@ -34,7 +34,7 @@ function changeFamily(family) {
                     @click="changeFamily(family.id)"
                 >
                     <span class="platform-icon"
-                        ><img :src="`/src/assets/icons/${family.icon}`" alt="icon" /></span
+                        ><img :src="`/icons/${family.icon}`" alt="icon" /></span
                     >{{ family.name }}
                 </li>
             </ul>

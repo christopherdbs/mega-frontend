@@ -135,7 +135,7 @@ console.log(props.data);
                     :src="
                         data.cover
                             ? data.cover.url.replace('t_thumb', 't_original')
-                            : '/src/assets/missing_cover.png'
+                            : '/missing_cover.png'
                     "
                     width="200px"
                     :class="{ 'hidden-fade': isHovering === props.data.id }"
@@ -150,7 +150,7 @@ console.log(props.data);
             <div class="platform-logo" v-if="!isHovering">
                 <img
                     v-if="props.data.family?.logo"
-                    :src="'/src/assets/logos/' + props.data.family.logo"
+                    :src="'/logos/' + props.data.family.logo"
                     height="40px"
                 />
             </div>

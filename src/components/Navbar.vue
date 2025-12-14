@@ -59,6 +59,8 @@ nav {
     display: flex;
     gap: 100px;
     list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .navbar-links a {
@@ -71,9 +73,14 @@ nav {
     color: #da1061;
 }
 
+.navbar-left {
+    width: 370px;
+}
+
 .navbar-right {
     display: flex;
     gap: 25px;
+    width: 370px;
 }
 
 .navbar-right button {

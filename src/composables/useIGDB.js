@@ -19,6 +19,7 @@ export function useIGDB() {
     const totalPages = ref(1);
     const filter = ref("popularity");
     const family = ref(0);
+    const search = ref("");
     const MIN_PRICE = 20;
     const MAX_PRICE = 80;
     const MAX_AGE_DEPRECIATION_YEARS = 5;
@@ -142,12 +143,14 @@ export function useIGDB() {
     }
     const fetchGames = async () => {
         const currentOffset = (currentPage.value - 1) * itemsPerPage;
+
         const requestBody =
-            "fields *, cover.url, cover.width, cover.height, platforms.name, platforms.platform_family.name, videos.name, videos.video_id; where videos != null & platforms = " +
+            (search.value != "" ? 'search "' + search.value + '";' : "") +
+            " fields *, cover.url, cover.width, cover.height, platforms.name, platforms.platform_family.name, videos.name, videos.video_id; where videos != null & platforms = " +
             getFamilyStr(platformsFiltered.value) +
-            " & total_rating_count > 75 ; sort " +
-            filter.value +
-            " desc; limit " +
+            " & total_rating_count > 75 ; " +
+            (search.value != "" ? "" : "sort " + filter.value + " desc; ") +
+            "limit " +
             itemsPerPage +
             "; offset " +
             currentOffset +
@@ -168,7 +171,7 @@ export function useIGDB() {
         return response;
     };
     watch(
-        [currentPage, filter, family],
+        [currentPage, filter, family, search],
         async () => {
             try {
                 const response = await fetchGames();
@@ -202,6 +205,10 @@ export function useIGDB() {
         games.value = value;
     }
 
+    function setSearch(value) {
+        search.value = value;
+    }
+
     return {
         isLoading: readonly(isLoading),
         error: readonly(error),
@@ -213,11 +220,13 @@ export function useIGDB() {
         filtersList: readonly(filtersList),
         platforms: readonly(platforms),
         family: readonly(family),
+        search,
         setFamily,
         setCurrentPage,
         setTotalPages,
         setGames,
         setFilter,
+        setSearch,
         fetchGames,
         fetchPopularGames,
         calculatePrice,

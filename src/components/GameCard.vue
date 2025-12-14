@@ -107,6 +107,7 @@ const router = useRouter();
 const goToDetail = () => {
     router.push(`/game/${props.data.id}`);
 };
+console.log(props.data);
 </script>
 
 <template>

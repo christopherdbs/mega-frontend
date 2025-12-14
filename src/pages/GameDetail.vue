@@ -54,7 +54,12 @@ const categories = ref([
 const { openDrawer } = inject("cart-drawer-key");
 const { openDrawer: openReviewDrawer } = inject("review-drawer-key");
 const { add } = useStorage();
-const { fetchPopularGames: fetchIGDBPopularGames } = useIGDB();
+const {
+    fetchPopularGames: fetchIGDBPopularGames,
+    fetchGame,
+    filterPlatforms,
+    calculatePrice,
+} = useIGDB();
 
 // Helper to format date
 const formatDate = (timestamp) => {
@@ -69,24 +74,8 @@ const getImageUrl = (image, size = "t_1080p") => {
     return image.url.replace("t_thumb", size);
 };
 
-const getPlatformLogo = (platformName) => {
-    const name = platformName.toLowerCase();
-    if (name.includes("playstation")) return "/src/assets/logos/Playstation.svg";
-    if (name.includes("xbox")) return "/src/assets/logos/Xbox.svg";
-    if (name.includes("nintendo")) return "/src/assets/logos/Nintendo.svg";
-    if (
-        name.includes("pc") ||
-        name.includes("steam") ||
-        name.includes("linux") ||
-        name.includes("mac")
-    )
-        return "/src/assets/logos/Steam.svg";
-    return null;
-};
-
 const CLIENT_ID = import.meta.env.VITE_IGDB_CLIENT_ID;
 const ACCESS_TOKEN = import.meta.env.VITE_IGDB_ACCESS_TOKEN;
-const { calculatePrice } = useIGDB();
 
 const fetchGameDetails = async (id) => {
     // If no API credentials, use sample data
@@ -95,21 +84,9 @@ const fetchGameDetails = async (id) => {
         return;
     }
 
-    const requestBody = `fields *, cover.url, cover.width, cover.height, screenshots.url, screenshots.width, screenshots.height, videos.video_id, platforms.name, platforms.platform_family.name, genres.name, involved_companies.company.name, similar_games; where id = ${id};`;
-
     try {
-        const response = await axios({
-            method: "POST",
-            url: "/api/v4/games",
-            data: requestBody,
-            headers: {
-                "Client-ID": CLIENT_ID,
-                Authorization: `Bearer ${ACCESS_TOKEN}`,
-            },
-        });
-        game.value = response.data[0];
-        game.price = game.rating_count;
-
+        game.value = await fetchGame(id);
+        console.log(game.value);
         // Reset video state when game changes
         heroVideoReady.value = false;
         // Re-init player logic
@@ -188,9 +165,21 @@ const fetchTrendingGames = async () => {
             headers: {
                 "Client-ID": CLIENT_ID,
                 Authorization: `Bearer ${ACCESS_TOKEN}`,
+                "X-Total-Count": "1",
             },
         });
         trendingGames.value = response.data;
+        console.log(trendingGames.value);
+
+        trendingGames.value = trendingGames.value.map((game) => {
+            return {
+                ...game,
+                platforms: filterPlatforms(game),
+                price: calculatePrice(game),
+            };
+        });
+
+        console.log(trendingGames.value);
     } catch (err) {
         console.error("Error fetching trending games:", err);
         trendingGames.value = samplePopularGames.slice().reverse();
@@ -325,8 +314,8 @@ watch(
                                     class="platform-icon-wrap"
                                 >
                                     <img
-                                        v-if="getPlatformLogo(p.name)"
-                                        :src="getPlatformLogo(p.name)"
+                                        v-if="p.name"
+                                        :src="`/src/assets/logos/${p.logo}`"
                                         :alt="p.name"
                                         class="mini-logo"
                                     />

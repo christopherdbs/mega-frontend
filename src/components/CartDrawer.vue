@@ -37,10 +37,10 @@ const handleOutsideClick = (event) => {
     closeDrawer();
 };
 onMounted(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("mousedown", handleOutsideClick, { passive: true });
 });
 onUnmounted(() => {
-    document.removeEventListener("mousedown", handleOutsideClick);
+    document.removeEventListener("mousedown", handleOutsideClick, { passive: true });
 });
 </script>
 
@@ -82,7 +82,7 @@ onUnmounted(() => {
     top: 0px;
     bottom: 0px;
     transition: transform 0.3s ease-out;
-    z-index: 5;
+    z-index: 25;
     border-radius: 12px;
     overflow-y: auto;
     transform: translateX(105%);

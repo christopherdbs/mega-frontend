@@ -72,7 +72,6 @@ const playVideo = () => {
 
 const onPlayerStateChange = (event) => {
     const playerState = playerRef.value.getPlayerState();
-    console.log(event, playerState);
     if (event.data === YT.PlayerState.PLAYING) {
         changeHasPlayed(event.target.g.id);
     }
@@ -82,9 +81,7 @@ const changeHasPlayed = (iframeId) => {
     if (!hasPlayedOnce.value) {
         isBuffering.value = false;
         hasPlayedOnce.value = true;
-        console.log(isHovering.value);
         if (!isHovering.value) pauseVideo();
-        console.log(`[${iframeId}] Prêt ! État final : ${playerRef.value.getPlayerState()}`);
     }
 };
 
@@ -94,7 +91,6 @@ const handleMouseEnter = () => {
     if (iframeReady.value && playerRef.value) {
         const videoId = props.data.videos[0].video_id;
         const playerState = playerRef.value.getPlayerState();
-        console.log(playerState);
         if (playerState === YT.PlayerState.PAUSED || playerState === YT.PlayerState.CUED) {
             playVideo();
         }
@@ -111,7 +107,7 @@ const router = useRouter();
 const goToDetail = () => {
     router.push(`/game/${props.data.id}`);
 };
-console.log(props.data.name, props.data.family);
+console.log(props.data);
 </script>
 
 <template>
@@ -160,7 +156,7 @@ console.log(props.data.name, props.data.family);
             </div>
             <div class="card-description" v-if="!isHovering">
                 <div class="card-name">{{ props.data.name }}</div>
-                <div class="card-price">{{ props.data.rating_count }} €</div>
+                <div class="card-price">{{ props.data.price.toFixed(2) }} €</div>
             </div>
         </div>
     </div>

@@ -1,12 +1,16 @@
 <script setup>
 import { RouterLink } from "vue-router";
+import SearchBar from "./SearchBar.vue";
 </script>
 
 <template>
     <nav>
         <div class="navbar">
             <div class="navbar-left">
-                <span class="icon"><RouterLink to="/"><img src="/src/assets/logos/logo.png" width="65px" ></img></RouterLink></span>
+                <span class="icon"
+                    ><RouterLink to="/"
+                        ><img src="/src/assets/logos/logo.png" width="65px" /></RouterLink
+                ></span>
             </div>
 
             <ul class="navbar-links">
@@ -15,13 +19,17 @@ import { RouterLink } from "vue-router";
             </ul>
 
             <div class="navbar-right">
-                <button class="cart" @click="openCart">
-                    <i class="fa-solid fa-basket-shopping"></i>
-                </button>
-                <button class="user">
-                    s
-                    <i class="fa-solid fa-circle-user"></i>
-                </button>
+                <SearchBar></SearchBar>
+                <RouterLink to="/cart">
+                    <button class="cart-button" @click="openCart">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+                </RouterLink>
+                <RouterLink to="/login">
+                    <button class="user">
+                        <i class="fa-solid fa-circle-user"></i>
+                    </button>
+                </RouterLink>
             </div>
         </div>
     </nav>
@@ -34,7 +42,7 @@ nav {
     width: 100vw;
     height: 75px;
     background: linear-gradient(90deg, #990c4483, #0202025e 45%);
-    z-index: 2;
+    z-index: 20;
 }
 
 .navbar {
@@ -51,6 +59,8 @@ nav {
     display: flex;
     gap: 100px;
     list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .navbar-links a {
@@ -63,9 +73,14 @@ nav {
     color: #da1061;
 }
 
+.navbar-left {
+    width: 370px;
+}
+
 .navbar-right {
     display: flex;
     gap: 25px;
+    width: 370px;
 }
 
 .navbar-right button {

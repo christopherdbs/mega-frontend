@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref , onMounted, onUnmounted } from "vue";
 
 const emit = defineEmits(["update:filter"]);
 const props = defineProps({
@@ -16,18 +16,36 @@ const props = defineProps({
 const open = ref(false);
 
 const filterBy = (filter) => {
+    toggleMenu();
     emit("update:filter", filter);
 };
 
 const toggleMenu = () => {
     open.value = !open.value;
 };
+const sortRef = ref(null);
+const handleOutsideClick = (event) => {
+    console.log(event);
+    if (!open.value) {
+        return;
+    }
+    if (sortRef.value && sortRef.value.contains(event.target)) {
+        return; 
+    }
+    open.value = false;
+};
+onMounted(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+});
+onUnmounted(() => {
+    document.removeEventListener("mousedown", handleOutsideClick);
+});
 </script>
 
 <template>
-    <div class="filter">
+    <div class="filter" ref="sortRef">
         <div @click="toggleMenu" class="selected" :class="{closed: !open}"><span>{{ props.filters[props.selected] }}</span><span>{{open ? "&#9650" : "&#9660"}}</span> </div>
-        <ul v-if="open">
+        <ul v-if="open" >
             <li
                 v-for="(label, elt) in props.filters"
                 :key="elt"

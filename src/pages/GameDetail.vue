@@ -18,43 +18,49 @@ const categories = ref([
         id: 1,
         name: "Sports & Racing",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1r7h.png",
-        link: "#sports"
+        link: "#sports",
     },
     {
         id: 2,
         name: "RPG",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2lbd.png",
-        link: "#rpg"
+        link: "#rpg",
     },
     {
         id: 3,
         name: "Adventure",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1tamu.png",
-        link: "#adventure"
+        link: "#adventure",
     },
     {
         id: 4,
         name: "Strategy",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2vec.png",
-        link: "#strategy"
+        link: "#strategy",
     },
     {
         id: 5,
         name: "Survival",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2ft5.png",
-        link: "#survival"
+        link: "#survival",
     },
     {
         id: 6,
         name: "Action",
         image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1r7x.png",
-        link: "#action"
+        link: "#action",
     },
 ]);
 const { openDrawer } = inject("cart-drawer-key");
 const { openDrawer: openReviewDrawer } = inject("review-drawer-key");
 const { add } = useStorage();
-const { fetchPopularGames: fetchIGDBPopularGames } = useIGDB();
+const {
+    fetchPopularGames: fetchIGDBPopularGames,
+    fetchTrendingGames,
+    fetchGame,
+    filterPlatforms,
+    calculatePrice,
+} = useIGDB();
 
 // Helper to format date
 const formatDate = (timestamp) => {
@@ -84,26 +90,13 @@ const ACCESS_TOKEN = import.meta.env.VITE_IGDB_ACCESS_TOKEN;
 const fetchGameDetails = async (id) => {
     // If no API credentials, use sample data
     if (!CLIENT_ID || !ACCESS_TOKEN) {
-        console.log("Using sample data (no API credentials found)");
         game.value = sampleGameData;
         return;
     }
 
-    const requestBody = `fields *, cover.url, cover.width, cover.height, screenshots.url, screenshots.width, screenshots.height, videos.video_id, platforms.name, platforms.platform_family.name, genres.name, involved_companies.company.name, similar_games; where id = ${id};`;
-
     try {
-        const response = await axios({
-            method: "POST",
-            url: "/api/v4/games",
-            data: requestBody,
-            headers: {
-                "Client-ID": CLIENT_ID,
-                Authorization: `Bearer ${ACCESS_TOKEN}`,
-            },
-        });
-        game.value = response.data[0];
-        game.price = game.rating_count;
-
+        game.value = await fetchGame(id);
+        console.log(game.value);
         // Reset video state when game changes
         heroVideoReady.value = false;
         // Re-init player logic
@@ -129,7 +122,7 @@ const fetchSimilarGames = async (ids) => {
     if (!ids || ids.length === 0) return;
 
     // Take first 6 similar games
-    const targetIds = ids.slice(0, 6).join(',');
+    const targetIds = ids.slice(0, 6).join(",");
 
     const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id; where id = (${targetIds});`;
 
@@ -166,25 +159,15 @@ const fetchPopularGames = async () => {
     }
 };
 
-const fetchTrendingGames = async () => {
-    // If no API credentials, use sample data (reuse popular games for trending)
+const fetchTrending = async () => {
     if (!CLIENT_ID || !ACCESS_TOKEN) {
         trendingGames.value = samplePopularGames.slice().reverse();
         return;
     }
 
-    const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id; sort hypes desc; limit 5; where videos != null;`;
     try {
-        const response = await axios({
-            method: "POST",
-            url: "/api/v4/games",
-            data: requestBody,
-            headers: {
-                "Client-ID": CLIENT_ID,
-                Authorization: `Bearer ${ACCESS_TOKEN}`,
-            },
-        });
-        trendingGames.value = response.data;
+        trendingGames.value = await fetchTrendingGames();
+        console.log(trendingGames.value);
     } catch (err) {
         console.error("Error fetching trending games:", err);
         trendingGames.value = samplePopularGames.slice().reverse();
@@ -228,7 +211,7 @@ function initializeHeroPlayer() {
                     if (event.data === YT.PlayerState.PLAYING) {
                         heroVideoReady.value = true;
                     }
-                }
+                },
             },
         });
     });
@@ -250,7 +233,7 @@ onMounted(() => {
         fetchGameDetails(route.params.id);
     }
     fetchPopularGames();
-    fetchTrendingGames();
+    fetchTrending();
 });
 
 watch(
@@ -264,16 +247,24 @@ watch(
 <template>
     <div class="game-detail-page" v-if="game">
         <!-- Hero Section -->
-        <div class="hero" :style="{
-            backgroundImage: `linear-gradient(to right, #1c1b29 10%, rgba(28, 27, 41, 0.8) 50%, rgba(28, 27, 41, 0.4) 100%), url(${getImageUrl(
-                game.screenshots?.[0] || game.cover,
-                't_1080p'
-            )})`,
-        }">
-            <div class="hero-video-container" :class="{ 'visible': heroVideoReady }">
-                <iframe v-if="game.videos?.[0]" id="hero-player-frame" :src="getEmbedUrl(game.videos[0].video_id)"
-                    frameborder="0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
+        <div
+            class="hero"
+            :style="{
+                backgroundImage: `linear-gradient(to right, #1c1b29 10%, rgba(28, 27, 41, 0.8) 50%, rgba(28, 27, 41, 0.4) 100%), url(${getImageUrl(
+                    game.screenshots?.[0] || game.cover,
+                    't_1080p'
+                )})`,
+            }"
+        >
+            <div class="hero-video-container" :class="{ visible: heroVideoReady }">
+                <iframe
+                    v-if="game.videos?.[0]"
+                    id="hero-player-frame"
+                    :src="getEmbedUrl(game.videos[0].video_id)"
+                    frameborder="0"
+                    allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
             </div>
             <div class="hero-content">
                 <!-- Breadcrumb removed as requested -->
@@ -284,7 +275,10 @@ watch(
 
                 <div class="game-meta">
                     <div class="rating-row-banner">
-                        <span class="score">{{ Math.round(game.rating || 0) }}</span>/100
+                        <span class="score">{{
+                            game.rating && game.rating != 0 ? Math.round(game.rating || 0) : "-"
+                        }}</span
+                        >/100
                     </div>
 
                     <div class="meta-info">
@@ -304,9 +298,17 @@ watch(
                         <div class="meta-item">
                             <strong>Available For:</strong>
                             <div class="platform-icons-row">
-                                <span v-for="p in game.platforms?.slice(0, 4)" :key="p.id" class="platform-icon-wrap">
-                                    <img v-if="getPlatformLogo(p.name)" :src="getPlatformLogo(p.name)" :alt="p.name"
-                                        class="mini-logo" />
+                                <span
+                                    v-for="p in game.platforms?.slice(0, 4)"
+                                    :key="p.id"
+                                    class="platform-icon-wrap"
+                                >
+                                    <img
+                                        v-if="p.name"
+                                        :src="`/src/assets/logos/${p.logo}`"
+                                        :alt="p.name"
+                                        class="mini-logo"
+                                    />
                                     <span v-else>{{ p.name }}</span>
                                 </span>
                             </div>
@@ -323,9 +325,17 @@ watch(
             <div class="sidebar-right">
                 <h3><span class="highlight">Similar</span> Games</h3>
                 <div class="sidebar-games">
-                    <div v-for="popGame in similarGames" :key="popGame.id" class="sidebar-game-card">
+                    <div
+                        v-for="popGame in similarGames"
+                        :key="popGame.id"
+                        class="sidebar-game-card"
+                    >
                         <router-link :to="`/game/${popGame.id}`">
-                            <img :src="getImageUrl(popGame.cover, 't_cover_big')" alt="Cover" class="sidebar-cover" />
+                            <img
+                                :src="getImageUrl(popGame.cover, 't_cover_big')"
+                                alt="Cover"
+                                class="sidebar-cover"
+                            />
                         </router-link>
                     </div>
                 </div>

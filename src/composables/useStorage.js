@@ -8,6 +8,7 @@ export function useStorage() {
         cartItems.value = items;
     };
     const add = (game) => {
+        console.log(game);
         if (!cartItems.value.find((item) => item.id == game.id)) {
             game.quantity = 1;
             cartItems.value.push(game);
@@ -38,7 +39,8 @@ export function useStorage() {
 
                 return item;
             });
-            saveItems(cartItems.value);
+            console.log(newItems);
+            saveItems(newItems);
         }
     };
 

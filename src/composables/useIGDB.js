@@ -5,7 +5,7 @@ import { platform_families } from "../utils/platform_families";
 
 import axios from "axios";
 
-const API_BASE_URL = "/api/v4/games";
+const API_BASE_URL = "/api/v4";
 
 export function useIGDB() {
     const data = ref(null);
@@ -14,12 +14,19 @@ export function useIGDB() {
     const CLIENT_ID = import.meta.env.VITE_IGDB_CLIENT_ID;
     const ACCESS_TOKEN = import.meta.env.VITE_IGDB_ACCESS_TOKEN;
     const games = ref([]);
+    const trendingGames = ref([]);
     const currentPage = ref(1);
     const itemsPerPage = 10;
     const totalPages = ref(1);
     const filter = ref("popularity");
     const family = ref(0);
-
+    const search = ref("");
+    const sortDirection = ref(true);
+    const MIN_PRICE = 20;
+    const MAX_PRICE = 80;
+    const MAX_AGE_DEPRECIATION_YEARS = 5;
+    const DEPRECIATION_RATE_PER_YEAR = 0.16;
+    let abortController = null;
     const platformsFiltered = computed(() => {
         if (family.value != 0) {
             return platforms
@@ -53,6 +60,11 @@ export function useIGDB() {
             const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
                 method: "POST",
                 body: queryBody,
+                headers: {
+                    "Client-ID": CLIENT_ID,
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                    "X-Total-Count": "1",
+                },
             });
 
             if (!response.ok) {
@@ -66,6 +78,42 @@ export function useIGDB() {
             error.value = err.message || "Erreur de récupération";
             isLoading.value = false;
             return null;
+        }
+    };
+
+    const fetchTrendingGames = async () => {
+        if (!trendingGames.value) {
+            return trendingGames.value;
+        }
+
+        const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id, genres.name; sort hypes desc; limit 5; where videos != null;`;
+        try {
+            const response = await axios({
+                method: "POST",
+                url: "/api/v4/games",
+                data: requestBody,
+                headers: {
+                    "Client-ID": CLIENT_ID,
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                    "X-Total-Count": "1",
+                },
+            });
+            trendingGames.value = response.data;
+            console.log(trendingGames.value);
+
+            trendingGames.value = trendingGames.value.map((game) => {
+                return {
+                    ...game,
+                    platforms: filterPlatforms(game),
+                    price: calculatePrice(game),
+                };
+            });
+
+            console.log(trendingGames.value);
+            return trendingGames.value;
+        } catch (err) {
+            console.error("Error fetching trending games:", err);
+            trendingGames.value = samplePopularGames.slice().reverse();
         }
     };
 
@@ -99,42 +147,167 @@ export function useIGDB() {
             };
         });
     };
+
+    const filterPlatforms = (game) => {
+        console.log(game.platforms);
+        const gameFamilySet = new Set();
+        const filteredGamePlatforms = game.platforms.filter((p) =>
+            platformsFiltered.value.includes(p.id)
+        );
+
+        filteredGamePlatforms.forEach((filtered, i) => {
+            console.log(filtered);
+            const platformRef = platforms.find((p) => p.id === filtered.id);
+            filteredGamePlatforms[i].logo = platform_families.find(
+                (f) => f.id == platformRef.family
+            ).logo;
+            filteredGamePlatforms[i].family = platformRef.family;
+        });
+        console.log(filteredGamePlatforms);
+        const filteredUniquePlatforms = filteredGamePlatforms.filter((fp) => {
+            if (gameFamilySet.has(fp.family)) {
+            } else {
+                gameFamilySet.add(fp.family);
+                return fp;
+            }
+        });
+        console.log(filteredUniquePlatforms);
+
+        return filteredUniquePlatforms;
+    };
+
+    function addPrice() {
+        if (!games.value) {
+            return games.value;
+        }
+        games.value = games.value.map((game) => {
+            return {
+                ...game,
+                price: calculatePrice(game),
+            };
+        });
+    }
+
+    function calculatePrice(game) {
+        if (
+            !game ||
+            typeof game.rating !== "number" ||
+            typeof game.first_release_date !== "number"
+        ) {
+            return (MIN_PRICE + MAX_PRICE) / 2 - 0.01;
+        }
+
+        const rating = Math.max(0, Math.min(100, game.rating));
+        const priceRange = MAX_PRICE - MIN_PRICE;
+        const basePrice = (rating / 100) * priceRange + MIN_PRICE;
+        const releaseDate = new Date(game.first_release_date * 1000);
+        const today = new Date();
+        const diffTime = Math.abs(today - releaseDate);
+        const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25);
+        const ageForDepreciation = Math.min(diffYears, MAX_AGE_DEPRECIATION_YEARS);
+        const totalDepreciationRate = ageForDepreciation * DEPRECIATION_RATE_PER_YEAR;
+        const depreciationAmount = basePrice * totalDepreciationRate;
+        let finalPrice = basePrice - depreciationAmount;
+        finalPrice = Math.max(3.99, finalPrice);
+
+        return parseFloat(finalPrice.toFixed(2));
+    }
+
+    const fetchGame = async (id) => {
+        const requestBody = `fields *, cover.url, cover.width, cover.height, screenshots.url, screenshots.width, screenshots.height, videos.video_id, platforms.name, platforms.platform_family.name, genres.name, involved_companies.company.name, similar_games; where id = ${id};`;
+
+        try {
+            const response = await axios({
+                method: "POST",
+                url: "/api/v4/games",
+                data: requestBody,
+                headers: {
+                    "Client-ID": CLIENT_ID,
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                    "X-Total-Count": "1",
+                },
+            });
+            let game = response.data[0];
+            game.platforms = filterPlatforms(game);
+            game.price = calculatePrice(game);
+            console.log(game);
+            return game;
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                console.log("Request canceled:", error.message);
+                return;
+            }
+
+            console.error("Error while fetching games:", error);
+            error.value = error.message;
+            isLoading.value = false;
+            return null;
+        }
+    };
+
     const fetchGames = async () => {
+        if (abortController) {
+            abortController.abort();
+        }
+        abortController = new AbortController();
+        const signal = abortController.signal;
         const currentOffset = (currentPage.value - 1) * itemsPerPage;
+
         const requestBody =
-            "fields *, cover.url, cover.width, cover.height, platforms.name, platforms.platform_family.name, videos.name, videos.video_id; where videos != null & platforms = " +
+            (search.value != "" ? 'search "' + search.value + '";' : "") +
+            " fields *, cover.url, cover.width, cover.height, platforms.name, platforms.platform_family.name, videos.name, videos.video_id; where videos != null & platforms = " +
             getFamilyStr(platformsFiltered.value) +
-            " & total_rating_count > 75 ; sort " +
-            filter.value +
-            " desc; limit " +
+            " & total_rating_count > 75 ; " +
+            (search.value != ""
+                ? ""
+                : "sort " + filter.value + " " + (sortDirection.value ? "asc" : "desc") + "; ") +
+            "limit " +
             itemsPerPage +
             "; offset " +
             currentOffset +
             ";";
-        const response = await axios({
-            method: "POST",
-            url: "/api/v4/games",
-            data: requestBody,
-            headers: {
-                "Client-ID": CLIENT_ID,
-                Authorization: `Bearer ${ACCESS_TOKEN}`,
-                "X-Total-Count": "1",
-            },
-        });
-        games.value = response.data;
-        filterPlatformsInGames();
-        return response;
+        try {
+            const response = await axios({
+                method: "POST",
+                url: "/api/v4/games",
+                data: requestBody,
+                headers: {
+                    "Client-ID": CLIENT_ID,
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                    "X-Total-Count": "1",
+                },
+                signal: signal,
+            });
+            games.value = response.data;
+            filterPlatformsInGames();
+            addPrice();
+            return response;
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                console.log("Request canceled:", error.message);
+                return;
+            }
+
+            console.error("Error while fetching games:", error);
+            error.value = error.message;
+            isLoading.value = false;
+            return null;
+        }
     };
     watch(
-        [currentPage, filter, family],
+        [currentPage, filter, family, search, sortDirection],
         async () => {
             try {
                 const response = await fetchGames();
+                if (!response) {
+                    return;
+                }
                 const totalCount = parseInt(response.headers["x-count"]) || 0;
                 totalPages.value = Math.ceil(totalCount / itemsPerPage);
             } catch (err) {
                 console.error("Error while fetching games:", err);
             } finally {
+                isLoading.value = false;
             }
         },
         { immediate: true }
@@ -152,6 +325,10 @@ export function useIGDB() {
         filter.value = value;
     }
 
+    function setSortDirection(value) {
+        sortDirection.value = value;
+    }
+
     function setFamily(value) {
         family.value = value;
     }
@@ -160,23 +337,36 @@ export function useIGDB() {
         games.value = value;
     }
 
+    function setSearch(value) {
+        search.value = value;
+    }
+
     return {
         isLoading: readonly(isLoading),
         error: readonly(error),
         games: readonly(games),
         currentPage: readonly(currentPage),
-        itemsPerPage: readonly(itemsPerPage),
+        itemsPerPage,
         totalPages: readonly(totalPages),
         filter: readonly(filter),
         filtersList: readonly(filtersList),
         platforms: readonly(platforms),
         family: readonly(family),
+        sortDirection: readonly(sortDirection),
+
+        search,
         setFamily,
         setCurrentPage,
         setTotalPages,
         setGames,
         setFilter,
+        setSearch,
+        setSortDirection,
         fetchGames,
+        fetchGame,
         fetchPopularGames,
+        filterPlatforms,
+        fetchTrendingGames,
+        calculatePrice,
     };
 }

@@ -13,9 +13,11 @@ const {
     filter,
     filtersList,
     family,
+    sortDirection,
     setFamily,
     setCurrentPage,
     setFilter,
+    setSortDirection,
     fetchGames,
 } = useIGDB();
 
@@ -29,8 +31,14 @@ const sortBy = (newSortValue) => {
     setFilter(newSortValue);
 };
 
+const changeDirection = () => {
+    console.log(sortDirection.value, !sortDirection.value);
+    setSortDirection(!sortDirection.value);
+};
+
 const filterBy = (newFilter) => {
     setFamily(newFilter);
+    setCurrentPage(1);
 };
 
 const chunkArray = (array, size) => {
@@ -51,7 +59,23 @@ const gameRows = computed(() => {
     <PlatformNavbar :family="family" @update:platformFamily="filterBy"></PlatformNavbar>
     <div class="catalog-page">
         <h1>Catalog</h1>
-        <Filter :filters="filtersList" :selected="filter" @update:filter="sortBy" class="sort" />
+        <div id="filters">
+            <Filter
+                :filters="filtersList"
+                :selected="filter"
+                @update:filter="sortBy"
+                class="sort"
+            />
+            <button id="sort-direction" @click="changeDirection" v-if="filter !== 'popularity'">
+                <i
+                    class="fa-solid"
+                    :class="{
+                        'fa-sort-numeric-up': sortDirection,
+                        'fa-sort-numeric-down': !sortDirection,
+                    }"
+                ></i>
+            </button>
+        </div>
         <div class="catalog">
             <div class="game-row" v-for="(row, rowIndex) in gameRows" :key="rowIndex">
                 <template v-for="game in row" :key="game.id">
@@ -99,40 +123,26 @@ const gameRows = computed(() => {
     margin-bottom: 30px;
 }
 
-.pagination {
-    height: 50px;
-    color: white;
-    text-align: center;
-    margin-top: 10px;
-    padding: 15px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 15px;
-    margin: auto;
-}
-
-.page-button {
-    background-color: #29273b;
-    min-width: 30px;
-    height: 30px;
-    line-height: 30px;
-    padding: 5px;
-    text-align: center;
-
-    font-size: large;
-    font-weight: bold;
-    border-radius: 12%;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-}
-
 .current-page {
     background-color: #3a3853;
 }
 
 .dots {
     font-size: x-large;
+}
+
+#filters {
+    display: flex;
+    gap: 25px;
+}
+
+#sort-direction {
+    width: 40px;
+    max-height: 40px;
+    background-color: #29273b;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
 }
 </style>

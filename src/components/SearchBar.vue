@@ -19,6 +19,12 @@ const handleOutsideClick = (event) => {
     }
     isSearchOpen.value = false;
 };
+
+const closeSearch = () => {
+    console.log("ok");
+    setSearch("");
+    isSearchOpen.value = false;
+};
 </script>
 
 <template>
@@ -32,7 +38,7 @@ const handleOutsideClick = (event) => {
             @click="isSearchOpen = true"
         />
         <div class="search-results" :ref="searchRef" v-if="isSearchOpen" @mousedown.stop>
-            <div class="search-item" v-for="game in games" @click="isSearchOpen = false">
+            <div class="search-item" v-for="game in games" @click="closeSearch">
                 <RouterLink :to="`/game/${game.id}`">
                     <div class="search-game">
                         <div>
@@ -67,6 +73,7 @@ const handleOutsideClick = (event) => {
     width: 250px;
     position: relative;
     transition: width 0.2s ease-in-out;
+    z-index: 30;
 }
 
 .search i {
@@ -106,6 +113,7 @@ const handleOutsideClick = (event) => {
 .search-item {
     display: flex;
     padding: 15px;
+    height: 100px;
 }
 
 .search-item a {
@@ -149,5 +157,9 @@ const handleOutsideClick = (event) => {
 
 .search-description {
     margin-left: 5px;
+}
+
+.search-description .game-platform {
+    text-align: left;
 }
 </style>

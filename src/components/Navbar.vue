@@ -42,7 +42,7 @@ nav {
     width: 100vw;
     height: 75px;
     background: linear-gradient(90deg, #990c4483, #0202025e 45%);
-    z-index: 2;
+    z-index: 20;
 }
 
 .navbar {

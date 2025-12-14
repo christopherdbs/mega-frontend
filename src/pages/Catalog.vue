@@ -38,6 +38,7 @@ const changeDirection = () => {
 
 const filterBy = (newFilter) => {
     setFamily(newFilter);
+    setCurrentPage(1);
 };
 
 const chunkArray = (array, size) => {
@@ -120,35 +121,6 @@ const gameRows = computed(() => {
 .sort {
     margin-left: 85px;
     margin-bottom: 30px;
-}
-
-.pagination {
-    height: 50px;
-    color: white;
-    text-align: center;
-    margin-top: 10px;
-    padding: 15px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 15px;
-    margin: auto;
-}
-
-.page-button {
-    background-color: #29273b;
-    min-width: 30px;
-    height: 30px;
-    line-height: 30px;
-    padding: 5px;
-    text-align: center;
-
-    font-size: large;
-    font-weight: bold;
-    border-radius: 12%;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
 }
 
 .current-page {

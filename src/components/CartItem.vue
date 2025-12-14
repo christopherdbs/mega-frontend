@@ -73,7 +73,7 @@ console.log(props.game);
             </p>
         </div>
         <div class="cartItemControls">
-            <p class="price">{{ game.price }} €</p>
+            <p class="price">{{ game.price.toFixed(2) }} €</p>
             <div class="quantity-control">
                 <button class="button-quantity" @click="decrement" :disabled="quantity <= 1">
                     -

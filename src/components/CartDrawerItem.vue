@@ -65,7 +65,7 @@ const clampQuantity = () => {
             <p class="game-platform">
                 {{ platform_families.find((pf) => game.family == platform_families.id).name }}
             </p>
-            <p class="game-price">{{ game.price }} €</p>
+            <p class="game-price">{{ game.price.toFixed(2) }} €</p>
         </div>
         <div class="cartItemControls">
             <div class="quantity-control">

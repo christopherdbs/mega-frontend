@@ -56,7 +56,7 @@ const closeSearch = () => {
                             <p class="game-platform">
                                 {{ game.platforms[0].name }}
                             </p>
-                            <p class="search-price">{{ game.price }} €</p>
+                            <p class="search-price">{{ game.price.toFixed(2) }} €</p>
                         </div>
                     </div>
                 </RouterLink>

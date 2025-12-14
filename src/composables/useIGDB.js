@@ -20,6 +20,7 @@ export function useIGDB() {
     const filter = ref("popularity");
     const family = ref(0);
     const search = ref("");
+    const sortDirection = ref(true);
     const MIN_PRICE = 20;
     const MAX_PRICE = 80;
     const MAX_AGE_DEPRECIATION_YEARS = 5;
@@ -149,7 +150,9 @@ export function useIGDB() {
             " fields *, cover.url, cover.width, cover.height, platforms.name, platforms.platform_family.name, videos.name, videos.video_id; where videos != null & platforms = " +
             getFamilyStr(platformsFiltered.value) +
             " & total_rating_count > 75 ; " +
-            (search.value != "" ? "" : "sort " + filter.value + " desc; ") +
+            (search.value != ""
+                ? ""
+                : "sort " + filter.value + " " + (sortDirection.value ? "asc" : "desc") + "; ") +
             "limit " +
             itemsPerPage +
             "; offset " +
@@ -171,7 +174,7 @@ export function useIGDB() {
         return response;
     };
     watch(
-        [currentPage, filter, family, search],
+        [currentPage, filter, family, search, sortDirection],
         async () => {
             try {
                 const response = await fetchGames();
@@ -197,6 +200,10 @@ export function useIGDB() {
         filter.value = value;
     }
 
+    function setSortDirection(value) {
+        sortDirection.value = value;
+    }
+
     function setFamily(value) {
         family.value = value;
     }
@@ -220,6 +227,7 @@ export function useIGDB() {
         filtersList: readonly(filtersList),
         platforms: readonly(platforms),
         family: readonly(family),
+        sortDirection: readonly(sortDirection),
         search,
         setFamily,
         setCurrentPage,
@@ -227,6 +235,7 @@ export function useIGDB() {
         setGames,
         setFilter,
         setSearch,
+        setSortDirection,
         fetchGames,
         fetchPopularGames,
         calculatePrice,

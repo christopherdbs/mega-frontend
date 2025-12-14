@@ -13,9 +13,11 @@ const {
     filter,
     filtersList,
     family,
+    sortDirection,
     setFamily,
     setCurrentPage,
     setFilter,
+    setSortDirection,
     fetchGames,
 } = useIGDB();
 
@@ -27,6 +29,11 @@ const goToPage = (newPage) => {
 
 const sortBy = (newSortValue) => {
     setFilter(newSortValue);
+};
+
+const changeDirection = () => {
+    console.log(sortDirection.value, !sortDirection.value);
+    setSortDirection(!sortDirection.value);
 };
 
 const filterBy = (newFilter) => {
@@ -51,7 +58,23 @@ const gameRows = computed(() => {
     <PlatformNavbar :family="family" @update:platformFamily="filterBy"></PlatformNavbar>
     <div class="catalog-page">
         <h1>Catalog</h1>
-        <Filter :filters="filtersList" :selected="filter" @update:filter="sortBy" class="sort" />
+        <div id="filters">
+            <Filter
+                :filters="filtersList"
+                :selected="filter"
+                @update:filter="sortBy"
+                class="sort"
+            />
+            <button id="sort-direction" @click="changeDirection" v-if="filter !== 'popularity'">
+                <i
+                    class="fa-solid"
+                    :class="{
+                        'fa-sort-numeric-up': sortDirection,
+                        'fa-sort-numeric-down': !sortDirection,
+                    }"
+                ></i>
+            </button>
+        </div>
         <div class="catalog">
             <div class="game-row" v-for="(row, rowIndex) in gameRows" :key="rowIndex">
                 <template v-for="game in row" :key="game.id">
@@ -134,5 +157,20 @@ const gameRows = computed(() => {
 
 .dots {
     font-size: x-large;
+}
+
+#filters {
+    display: flex;
+    gap: 25px;
+}
+
+#sort-direction {
+    width: 40px;
+    max-height: 40px;
+    background-color: #29273b;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
 }
 </style>

@@ -25,7 +25,7 @@ export function useIGDB() {
     const MAX_PRICE = 80;
     const MAX_AGE_DEPRECIATION_YEARS = 5;
     const DEPRECIATION_RATE_PER_YEAR = 0.16;
-
+    let abortController = null;
     const platformsFiltered = computed(() => {
         if (family.value != 0) {
             return platforms
@@ -143,6 +143,11 @@ export function useIGDB() {
         return parseFloat(finalPrice.toFixed(2));
     }
     const fetchGames = async () => {
+        if (abortController) {
+            abortController.abort();
+        }
+        abortController = new AbortController();
+        const signal = abortController.signal;
         const currentOffset = (currentPage.value - 1) * itemsPerPage;
 
         const requestBody =
@@ -158,31 +163,48 @@ export function useIGDB() {
             "; offset " +
             currentOffset +
             ";";
-        const response = await axios({
-            method: "POST",
-            url: "/api/v4/games",
-            data: requestBody,
-            headers: {
-                "Client-ID": CLIENT_ID,
-                Authorization: `Bearer ${ACCESS_TOKEN}`,
-                "X-Total-Count": "1",
-            },
-        });
-        games.value = response.data;
-        filterPlatformsInGames();
-        addPrice();
-        return response;
+        try {
+            const response = await axios({
+                method: "POST",
+                url: "/api/v4/games",
+                data: requestBody,
+                headers: {
+                    "Client-ID": CLIENT_ID,
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                    "X-Total-Count": "1",
+                },
+                signal: signal,
+            });
+            games.value = response.data;
+            filterPlatformsInGames();
+            addPrice();
+            return response;
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                console.log("Request canceled:", error.message);
+                return;
+            }
+
+            console.error("Error while fetching games:", error);
+            error.value = error.message;
+            isLoading.value = false;
+            return null;
+        }
     };
     watch(
         [currentPage, filter, family, search, sortDirection],
         async () => {
             try {
                 const response = await fetchGames();
+                if (!response) {
+                    return;
+                }
                 const totalCount = parseInt(response.headers["x-count"]) || 0;
                 totalPages.value = Math.ceil(totalCount / itemsPerPage);
             } catch (err) {
                 console.error("Error while fetching games:", err);
             } finally {
+                isLoading.value = false;
             }
         },
         { immediate: true }

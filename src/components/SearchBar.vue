@@ -1,10 +1,22 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import { useIGDB } from "../composables/useIGDB";
 import { platform_families } from "../utils/platform_families";
 const { games, search, setSearch } = useIGDB();
 const isSearchOpen = ref(false);
 const searchRef = ref(null);
+const searchContainerRef = ref(null);
+watch(
+    () => games.value,
+    (newGames) => {
+        if (newGames && newGames.length > 0 && search.value.length >= 3) {
+            console.log(newGames);
+            isSearchOpen.value = true;
+        } else if (newGames && newGames.length === 0 && isSearchOpen.value) {
+        }
+    }
+);
+
 onMounted(() => {
     document.addEventListener("mousedown", handleOutsideClick);
 });
@@ -15,6 +27,9 @@ onUnmounted(() => {
 const handleOutsideClick = (event) => {
     console.log(event);
     if (!isSearchOpen.value) {
+        return;
+    }
+    if (searchContainerRef.value && searchContainerRef.value.contains(event.target)) {
         return;
     }
     isSearchOpen.value = false;
@@ -36,8 +51,14 @@ const closeSearch = () => {
             @keyup.enter="setSearch"
             placeholder="Search a game"
             @click="isSearchOpen = true"
+            ref="searchContainerRef"
         />
-        <div class="search-results" :ref="searchRef" v-if="isSearchOpen" @mousedown.stop>
+        <div
+            class="search-results"
+            :ref="searchRef"
+            v-if="isSearchOpen && search != '' && search.length >= 3"
+            @mousedown.stop
+        >
             <div class="search-item" v-for="game in games" @click="closeSearch">
                 <RouterLink :to="`/game/${game.id}`">
                     <div class="search-game">

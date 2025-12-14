@@ -25,7 +25,7 @@ import SearchBar from "./SearchBar.vue";
                         <i class="fa-solid fa-cart-shopping"></i>
                     </button>
                 </RouterLink>
-                <RouterLink to="/connexion">
+                <RouterLink to="/login">
                     <button class="user">
                         <i class="fa-solid fa-circle-user"></i>
                     </button>

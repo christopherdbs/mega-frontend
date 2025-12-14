@@ -6,7 +6,7 @@ import CartItem from "./CartItem.vue";
 import { useStorage } from "../composables/useStorage";
 const props = defineProps({
     game: {
-        type: Number,
+        type: Object,
         required: true,
     },
 });

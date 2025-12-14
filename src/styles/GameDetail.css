@@ -83,8 +83,6 @@
 .mini-logo {
     height: 20px;
     width: auto;
-    filter: invert(1);
-    /* Make black logos white if they are black SVGs */
 }
 
 /* Gradient overlay handled inline in Vue, but we can add a base fade here if needed */

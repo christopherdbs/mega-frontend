@@ -56,6 +56,7 @@ const { openDrawer: openReviewDrawer } = inject("review-drawer-key");
 const { add } = useStorage();
 const {
     fetchPopularGames: fetchIGDBPopularGames,
+    fetchTrendingGames,
     fetchGame,
     filterPlatforms,
     calculatePrice,
@@ -149,36 +150,14 @@ const fetchPopularGames = async () => {
     }
 };
 
-const fetchTrendingGames = async () => {
-    // If no API credentials, use sample data (reuse popular games for trending)
+const fetchTrending = async () => {
     if (!CLIENT_ID || !ACCESS_TOKEN) {
         trendingGames.value = samplePopularGames.slice().reverse();
         return;
     }
 
-    const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id; sort hypes desc; limit 5; where videos != null;`;
     try {
-        const response = await axios({
-            method: "POST",
-            url: "/api/v4/games",
-            data: requestBody,
-            headers: {
-                "Client-ID": CLIENT_ID,
-                Authorization: `Bearer ${ACCESS_TOKEN}`,
-                "X-Total-Count": "1",
-            },
-        });
-        trendingGames.value = response.data;
-        console.log(trendingGames.value);
-
-        trendingGames.value = trendingGames.value.map((game) => {
-            return {
-                ...game,
-                platforms: filterPlatforms(game),
-                price: calculatePrice(game),
-            };
-        });
-
+        trendingGames.value = await fetchTrendingGames();
         console.log(trendingGames.value);
     } catch (err) {
         console.error("Error fetching trending games:", err);
@@ -245,7 +224,7 @@ onMounted(() => {
         fetchGameDetails(route.params.id);
     }
     fetchPopularGames();
-    fetchTrendingGames();
+    fetchTrending();
 });
 
 watch(
@@ -287,7 +266,9 @@ watch(
 
                 <div class="game-meta">
                     <div class="rating-row-banner">
-                        <span class="score">{{ Math.round(game.rating || 0) }}</span
+                        <span class="score">{{
+                            game.rating && game.rating != 0 ? Math.round(game.rating || 0) : "-"
+                        }}</span
                         >/100
                     </div>
 

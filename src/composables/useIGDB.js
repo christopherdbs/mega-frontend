@@ -14,6 +14,7 @@ export function useIGDB() {
     const CLIENT_ID = import.meta.env.VITE_IGDB_CLIENT_ID;
     const ACCESS_TOKEN = import.meta.env.VITE_IGDB_ACCESS_TOKEN;
     const games = ref([]);
+    const trendingGames = ref([]);
     const currentPage = ref(1);
     const itemsPerPage = 10;
     const totalPages = ref(1);
@@ -77,6 +78,42 @@ export function useIGDB() {
             error.value = err.message || "Erreur de récupération";
             isLoading.value = false;
             return null;
+        }
+    };
+
+    const fetchTrendingGames = async () => {
+        if (!trendingGames.value) {
+            return trendingGames.value;
+        }
+
+        const requestBody = `fields *, cover.url, platforms.name, platforms.platform_family.name, videos.video_id, genres.name; sort hypes desc; limit 5; where videos != null;`;
+        try {
+            const response = await axios({
+                method: "POST",
+                url: "/api/v4/games",
+                data: requestBody,
+                headers: {
+                    "Client-ID": CLIENT_ID,
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                    "X-Total-Count": "1",
+                },
+            });
+            trendingGames.value = response.data;
+            console.log(trendingGames.value);
+
+            trendingGames.value = trendingGames.value.map((game) => {
+                return {
+                    ...game,
+                    platforms: filterPlatforms(game),
+                    price: calculatePrice(game),
+                };
+            });
+
+            console.log(trendingGames.value);
+            return trendingGames.value;
+        } catch (err) {
+            console.error("Error fetching trending games:", err);
+            trendingGames.value = samplePopularGames.slice().reverse();
         }
     };
 
@@ -316,6 +353,7 @@ export function useIGDB() {
         platforms: readonly(platforms),
         family: readonly(family),
         sortDirection: readonly(sortDirection),
+
         search,
         setFamily,
         setCurrentPage,
@@ -328,6 +366,7 @@ export function useIGDB() {
         fetchGame,
         fetchPopularGames,
         filterPlatforms,
+        fetchTrendingGames,
         calculatePrice,
     };
 }

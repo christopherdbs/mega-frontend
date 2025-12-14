@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink } from "vue-router";
+import SearchBar from "./SearchBar.vue";
 </script>
 
 <template>
@@ -18,6 +19,7 @@ import { RouterLink } from "vue-router";
             </ul>
 
             <div class="navbar-right">
+                <SearchBar></SearchBar>
                 <RouterLink to="/cart">
                     <button class="cart-button" @click="openCart">
                         <i class="fa-solid fa-cart-shopping"></i>
